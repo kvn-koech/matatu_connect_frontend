@@ -5,7 +5,7 @@ const [username,setUsername]=useState("");
 const [password,setPassword]=useState("");
     return(
    <div>
-    <LoginCard />
+    <LoginCard username={username} setUsername={setUsername} password={password} setPassword={setPassword} />
    </div>
     )}
 
@@ -36,11 +36,11 @@ function RoleSwitcher(){
     );
 }
 
-function LoginForm(){
+function LoginForm({username,setUsername,password,setPassword}){
     return(
         <div>
-        <UsernameInput />
-        <PasswordInput />
+        <UsernameInput username={username} setUsername={setUsername} />
+        <PasswordInput password={password} setPassword={setPassword} />
         <ForgotPasswordLink />
         <LoginButton />
         </div>
@@ -68,15 +68,15 @@ function SignupPrompt(){
     );
 }
 
-function UsernameInput(){
+function UsernameInput({username , setUsername}){
     return(
-        <div>usernameInput</div>
+        <input type="text" value={username} onChange={(e)=>setUsername (e.target.value)} placehoder="Username"/>
     );
 }
 
-function PasswordInput(){
+function PasswordInput({password , setPassword}){
     return(
-        <div>PasswordInput</div>
+        <input type="password" value={password} onChange={(e)=> setPassword(e.target.value)} placeholder="Password"/>
     );
 }
 
@@ -88,6 +88,6 @@ function ForgotPasswordLink(){
 
 function LoginButton(){
     return(
-        <div>LoginButton</div>
+        <button type="submit">Login</button>
     );
 }
