@@ -37,13 +37,17 @@ function RoleSwitcher(){
 }
 
 function LoginForm({username,setUsername,password,setPassword}){
+    function handleSubmit(e){
+        e.preventDefault();
+        console.log(username,password)
+    }
     return(
-        <div>
+        <form onSubmit={handleSubmit}>
         <UsernameInput username={username} setUsername={setUsername} />
         <PasswordInput password={password} setPassword={setPassword} />
         <ForgotPasswordLink />
         <LoginButton />
-        </div>
+        </form>
     );
 }
 
@@ -70,7 +74,7 @@ function SignupPrompt(){
 
 function UsernameInput({username , setUsername}){
     return(
-        <input type="text" value={username} onChange={(e)=>setUsername (e.target.value)} placehoder="Username"/>
+        <input type="text" value={username} onChange={(e)=>setUsername (e.target.value)} placeholder="Username"/>
     );
 }
 
