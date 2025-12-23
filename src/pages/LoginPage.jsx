@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-
+import matatuIcon from "../assets/Matatu_icon.png";
 function LoginPage(){
 const [username,setUsername]=useState("");
 const [password,setPassword]=useState("");
@@ -13,10 +13,10 @@ const [role,setRole]=useState("commuter");
 
 export default LoginPage;
 
-function LoginCard({username,setUsername,password,setPassword,role,setRole}){
+function LoginCard({username,setUsername,password,setPassword,role,setRole,title,setTitle,subTitle,setSubTitle}){
     return(
         <div>
-        <BrandHeader/>
+        <BrandHeader title="Matatu Connect" subTitle="Welcome Back, please login to continue" iconsrc={matatuIcon}/>
         <RoleSwitcher role={role} setRole={setRole} />
         <LoginForm username={username} setUsername={setUsername} password={password} setPassword={setPassword}/>
         <Divider/>
@@ -26,9 +26,13 @@ function LoginCard({username,setUsername,password,setPassword,role,setRole}){
     );
 }
 
-function BrandHeader(){
+function BrandHeader({title,subTitle,iconsrc}){
     return(
-        <div>BrandHeader</div>
+        <header> 
+            <h2>{title}</h2>
+            <img src={iconsrc} alt="Matatu icon" />
+            <p>{subTitle}</p>
+        </header>
     );
 }
 
@@ -62,6 +66,7 @@ function RoleSwitcher({role,setRole}){
 
 function LoginForm({username,setUsername,password,setPassword,role}){
     const [error,setError]=useState("");
+    const isValid=username.trim() !=="" && password.trim()=="";
     function handleSubmit(e){
         e.preventDefault();
         if(username.trim()===""&& password.trim()===""){
@@ -84,7 +89,7 @@ function LoginForm({username,setUsername,password,setPassword,role}){
         <UsernameInput username={username} setUsername={setUsername} />
         <PasswordInput password={password} setPassword={setPassword} />
         <ForgotPasswordLink />
-        <LoginButton />
+        <LoginButton disabled={!isValid}/>
         </form>
     );
 }
@@ -128,8 +133,8 @@ function ForgotPasswordLink(){
     );
 }
 
-function LoginButton(){
+function LoginButton({disabled}){
     return(
-        <button type="submit">Login</button>
+        <button type="submit" disabled={disabled}>Login</button>
     );
 }
