@@ -3,19 +3,20 @@ import React, {useState} from "react";
 function LoginPage(){
 const [username,setUsername]=useState("");
 const [password,setPassword]=useState("");
+const [role,setRole]=useState("commuter");
     return(
    <div>
-    <LoginCard username={username} setUsername={setUsername} password={password} setPassword={setPassword} />
+    <LoginCard username={username} setUsername={setUsername} password={password} setPassword={setPassword} role={role} setRole={setRole}/>
    </div>
     )}
 
 export default LoginPage;
 
-function LoginCard({username,setUsername,password,setPassword}){
+function LoginCard({username,setUsername,password,setPassword,role,setRole}){
     return(
         <div>
         <BrandHeader/>
-        <RoleSwitcher/>
+        <RoleSwitcher role={role} setRole={setRole} />
         <LoginForm username={username} setUsername={setUsername} password={password} setPassword={setPassword}/>
         <Divider/>
         <GoogleButton/>
@@ -30,9 +31,31 @@ function BrandHeader(){
     );
 }
 
-function RoleSwitcher(){
+function RoleSwitcher({role,setRole}){
+    const containerStyle = {
+    fontFamily: "system-ui, Arial, sans-serif",
+    fontSize: "16px",
+  };
+
+    const buttonStyle = {
+    fontFamily: "inherit",
+    fontSize: "inherit",
+    padding: "8px 12px",
+    marginRight: "8px",
+    cursor: "pointer",
+  };
+
+    const activeButtonStyle = {
+    ...buttonStyle,
+    fontWeight: 700,
+  };
     return(
-        <div>RoleSwitcher</div>
+        < div style={containerStyle}>
+        <button type="button" onClick={()=>setRole("commuter")} style={role === "commuter" ? activeButtonStyle : buttonStyle}>Commuter</button>
+        <button type="button" onClick={()=>setRole("driver")} style={role === "driver" ? activeButtonStyle : buttonStyle}>Driver</button>
+        <button type="button" onClick={()=>setRole("sacco_manager")} style={role === "sacco_manager" ? activeButtonStyle : buttonStyle}>Sacco_manager</button>
+         <p>Selected: {role}</p>
+        </div>
     );
 }
 
