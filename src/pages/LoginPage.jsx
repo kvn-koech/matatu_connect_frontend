@@ -1,178 +1,117 @@
-import "../index.css";
-import React, {useState} from "react";
+import { useState } from "react";
 import matatuIcon from "../assets/Matatu_icon.png";
 import googleIcon from "../assets/google_icon.png";
-import padlockIcon from "../assets/padlock_icon.png";
-import personIcon from "../assets/person_Icon.png";
 
-function LoginPage(){
-const [username,setUsername]=useState("");
-const [password,setPassword]=useState("");
-const [role,setRole]=useState("commuter");
+export default function LoginPage() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("commuter");
+  const [error, setError] = useState("");
 
-
-    return(
-   <div className="page">
-    <div className="card">
-    <LoginCard username={username} setUsername={setUsername} password={password} setPassword={setPassword} role={role} setRole={setRole}/>
-   </div>
-   </div>
-    )}
-
-export default LoginPage;
-
-function LoginCard({username,setUsername,password,setPassword,role,setRole,title,setTitle,subTitle,setSubTitle}){
-    return(
-        <div className="page-center">
-        <BrandHeader title="Matatu Connect" subTitle="Welcome Back, please login to continue" iconsrc={matatuIcon}/>
-        <RoleSwitcher role={role} setRole={setRole} />      
-        <LoginForm username={username} setUsername={setUsername} password={password} setPassword={setPassword} />
-        <Divider/>
-        <GoogleButton iconsrc={googleIcon } setUsername={setUsername}  setPassword={setPassword}/>
-        <SignupPrompt/>
-        <SignupGoogle />
-        </div>
-    );
-}
-
-function BrandHeader({title,subTitle,iconsrc}){
-    return(
-        <header> 
-            <h2>{title}</h2>
-            <img src={iconsrc} alt="Matatu icon" />
-            <p>{subTitle}</p>
-        </header>
-    );
-}
-
-function RoleSwitcher({role,setRole}){
-    const containerStyle = {
-    fontFamily: "system-ui, Arial, sans-serif",fontSize: "16px"
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!username || !password) {
+      setError("Username and password are required");
+      return;
+    }
+    setError("");
+    console.log({ username, password, role });
   };
 
-    const buttonStyle = {fontFamily: "inherit",fontSize: "inherit",padding: "8px 12px",marginRight: "8px",cursor: "pointer",
-  };
-
-    const activeButtonStyle = {
-    ...buttonStyle,
-    fontWeight: 700,
-  };
-    return(
-        < div style={containerStyle}>
-        <button type="button" onClick={()=>setRole("commuter")} style={role === "commuter" ? activeButtonStyle : buttonStyle}>Commuter</button>
-        <button type="button" onClick={()=>setRole("driver")} style={role === "driver" ? activeButtonStyle : buttonStyle}>Driver</button>
-        <button type="button" onClick={()=>setRole("sacco_manager")} style={role === "sacco_manager" ? activeButtonStyle : buttonStyle}>Sacco_manager</button>
-         <p>Selected: {role}</p>
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        {/* Brand */}
+        <div className="flex items-center gap-2 mb-6">
+          <img src={matatuIcon} alt="Matatu Connect" className="w-8 h-8" />
+          <span className="font-bold text-lg text-secondary">
+            Matatu Connect
+          </span>
         </div>
-    );
-}
 
-function LoginForm({username,setUsername,password,setPassword,role ,iconsrc1=padlockIcon, iconsrc2=personIcon}){
-    const [error,setError]=useState("");
-    const isValid=username.trim() !=="" ;
-    function handleSubmit(e){
-        e.preventDefault();
-        if(username.trim()===""&& password.trim()===""){
-            setError("Username and passowrd are required");
-            return;
-        }
-        if(username.trim()===""){
-            setError("username is required");
-            return;
-        }
-        if(password.trim()===""){
-            setError("password is required");
-            return;
-        }
-        setError("");
-        console.log(username,password,role);
-        setUsername("");
-        setPassword("");
-    }
-    return(
-        <form onSubmit={handleSubmit}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-        <UsernameInput username={username} setUsername={setUsername} iconSrc={iconsrc2}  />
-        
-        <PasswordInput password={password} setPassword={setPassword} iconSrc={iconsrc1} />
-        
+        {/* Heading */}
+        <h1 className="text-2xl font-bold mb-2">
+          Welcome back
+        </h1>
+        <p className="text-text-muted mb-6">
+          Please log in to continue
+        </p>
+
+        {/* Role switcher */}
+        <div className="flex gap-2 mb-6">
+          {["commuter", "driver", "sacco_manager"].map((r) => (
+            <button
+              key={r}
+              type="button"
+              onClick={() => setRole(r)}
+              className={`px-4 py-2 rounded-lg text-sm border transition ${
+                role === r
+                  ? "bg-secondary text-white border-secondary"
+                  : "border-gray-300 text-text-muted hover:bg-surface"
+              }`}
+            >
+              {r.replace("_", " ")}
+            </button>
+          ))}
         </div>
-        <ForgotPasswordLink />
-        <LoginButton disabled={!isValid}/>
-        </form>
-    );
-}
 
-function Divider(){
-    return (
-        <div
-        style={{display: "flex",alignItems: "center",gap: "12px",margin: "16px 0",width: "100%",
-        }}
-        >
-      <span style={{ flex: 1, height: "1px", background: "#d0d0d0" }} />
-      <span style={{ fontSize: "14px", color: "#666" }}>or</span>
-      <span style={{ flex: 1, height: "1px", background: "#d0d0d0" }} />
-    </div>  
-    );
-    }
-
-function GoogleButton({iconsrc,setUsername, setPassword}){
-    function handleGoogleClick() {
-    setUsername("");
-    setPassword("");
-    }
-    return(
-        <button
-          type="button"style={{display: "flex",alignItems: "center",gap: "8px",padding: "8px 12px",cursor: "pointer"
-          }}
-        >
-          <img
-            src={iconsrc}alt="Google icon" style={{ width: "15px", height: "18px" }}
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Username or Email"
+            className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary outline-none"
           />
+
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary outline-none"
+          />
+
+          {error && (
+            <p className="text-sm text-danger">{error}</p>
+          )}
+
+          <button
+            type="submit"
+            className="btn-primary w-full"
+          >
+            Login
+          </button>
+        </form>
+
+        <div className="flex justify-end mt-3">
+          <a href="#" className="text-sm text-secondary hover:underline">
+            Forgot password?
+          </a>
+        </div>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3 my-6">
+          <div className="flex-1 h-px bg-gray-200" />
+          <span className="text-xs text-text-muted">or</span>
+          <div className="flex-1 h-px bg-gray-200" />
+        </div>
+
+        {/* Google login */}
+        <button className="w-full border rounded-lg py-2 flex items-center justify-center gap-2 hover:bg-surface transition">
+          <img src={googleIcon} alt="Google" className="w-4 h-4" />
           Sign in with Google
         </button>
-    );
-}
-function SignupGoogle(){
-    return(
-        <div>Click to sign in with Google</div>
-    )
-}
-function SignupPrompt(){
-    return(
-        <div>
-            <p>Don't have an account</p>
-            <button type="button">Sign up</button>
-        </div>
-    );
-}
 
-function UsernameInput({ username, setUsername, iconSrc }) {
-  return (
-    <div className="input-wrap">
-      <img className="input-icon" src={iconSrc} alt="" />
-      <input className="input" type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
+        {/* Signup */}
+        <p className="text-sm text-text-muted text-center mt-6">
+          Don’t have an account?{" "}
+          <a href="/commuter-signup" className="text-secondary hover:underline">
+            Sign up
+          </a>
+        </p>
+      </div>
     </div>
   );
-}
-
-function PasswordInput({ password, setPassword, iconSrc }) {
-  return (
-    <div className="input-wrap">
-      <img className="input-icon" src={iconSrc} alt="" />
-      <input className="input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password"
-      />
-    </div>
-  );
-}
-function ForgotPasswordLink(){
-    return(
-        <div>ForgotPasswordLink</div>
-    );
-}
-
-function LoginButton({disabled}){
-    return(
-        <button type="submit" disabled={disabled}>Login</button>
-    );
 }

@@ -1,250 +1,124 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import matatuIcon from "../assets/Matatu_icon.png";
-import "../index.css";
 
-function CommuterSignup() {
-  const [firstname, setfirstname] = useState("");
-  const [secondname, setsecondname] = useState("");
-  const [email, setemail] = useState("");
-  const [password, setpassword] = useState("");
+export default function CommuterSignup() {
+  const [firstname, setFirstname] = useState("");
+  const [secondname, setSecondname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  return (
-    <Commuter
-      firstname={firstname}
-      setfirstname={setfirstname}
-      secondname={secondname}
-      setsecondname={setsecondname}
-      email={email}
-      setemail={setemail}
-      password={password}
-      setpassword={setpassword}
-    />
-  );
-}
-
-export default CommuterSignup;
-
-function Commuter({
-  firstname,
-  setfirstname,
-  secondname,
-  setsecondname,
-  email,
-  setemail,
-  password,
-  setpassword,
-}) {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log({ firstname, secondname, email, password });
   };
 
   return (
-    <main className="signupPage">
-      <section className="signupLayout">
-        {/* LEFT */}
-        <section className="leftPanel">
-          <MatatuConnect text="Matatu Connect" icon={matatuIcon} />
+    <div className="min-h-screen grid md:grid-cols-2">
+      {/* LEFT – FORM */}
+      <div className="flex items-center justify-center px-6 bg-background">
+        <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow">
+          {/* Brand */}
+          <div className="flex items-center gap-2 mb-6">
+            <img src={matatuIcon} alt="Matatu Connect" className="w-8 h-8" />
+            <span className="font-bold text-lg text-secondary">
+              Matatu Connect
+            </span>
+          </div>
 
-          <section className="card">
-            <CreateAccount
-              title="Create your Account"
-              subtitle="Ride smarter across Kenya. Join the community today."
-            />
+          {/* Heading */}
+          <h1 className="text-2xl font-bold mb-2">
+            Create your account
+          </h1>
+          <p className="text-text-muted mb-6">
+            Ride smarter across Kenya. Join the community today.
+          </p>
 
-            <div className="socialRow">
-              <GoogleButton text="Continue with Google" />
-              <AppleButton text="Continue with Apple" />
+          {/* Social buttons */}
+          <div className="space-y-3 mb-6">
+            <button className="w-full border rounded-lg py-2 hover:bg-surface transition">
+              Continue with Google
+            </button>
+            <button className="w-full border rounded-lg py-2 hover:bg-surface transition">
+              Continue with Apple
+            </button>
+          </div>
+
+          <div className="flex items-center gap-3 my-6">
+            <div className="flex-1 h-px bg-gray-200" />
+            <span className="text-xs text-text-muted">
+              Or register with email
+            </span>
+            <div className="flex-1 h-px bg-gray-200" />
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <input
+                value={firstname}
+                onChange={(e) => setFirstname(e.target.value)}
+                placeholder="First name"
+                className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary outline-none"
+              />
+              <input
+                value={secondname}
+                onChange={(e) => setSecondname(e.target.value)}
+                placeholder="Second name"
+                className="border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary outline-none"
+              />
             </div>
 
-            <RegisterwithMail text="Or register with email" />
-
-            <Signupform
-              firstname={firstname}
-              setfirstname={setfirstname}
-              secondname={secondname}
-              setsecondname={setsecondname}
-              email={email}
-              setemail={setemail}
-              password={password}
-              setpassword={setpassword}
-              onSubmit={handleSubmit}
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary outline-none"
             />
 
-            <Signupbutton text="Sign up" />
-          </section>
-        </section>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary outline-none"
+            />
 
-        {/* RIGHT */}
-        <aside className="rightPanel">
-          <Rightpanelimage />
-          <Rightpanel
-            title="Live Tracking & Real-time Updates"
-            body="Never miss your ride again. Track your matatu in real-time and plan your journey with confidence."
-          />
-          <Rightpaneldash activeIndex={0} total={3} />
-        </aside>
-      </section>
-    </main>
-  );
-}
+            <button type="submit" className="btn-primary w-full mt-4">
+              Sign up
+            </button>
+          </form>
 
-function MatatuConnect({ text, icon }) {
-  return (
-    <div className="matatuConnect">
-      <img className="brandIcon" src={icon} alt="Matatu icon" />
-      <span className="brandText">{text}</span>
-    </div>
-  );
-}
-
-function CreateAccount({ title, subtitle }) {
-  return (
-    <div className="createAccount">
-      <h1 className="title">{title}</h1>
-      <p className="subtitle">{subtitle}</p>
-    </div>
-  );
-}
-
-function GoogleButton({ text }) {
-  return (
-    <button type="button" className="socialBtn">
-      {text}
-    </button>
-  );
-}
-
-function AppleButton({ text }) {
-  return (
-    <button type="button" className="socialBtn">
-      {text}
-    </button>
-  );
-}
-
-function RegisterwithMail({ text }) {
-  return <p className="registerWithMail">{text}</p>;
-}
-
-function Signupform({
-  firstname,
-  setfirstname,
-  secondname,
-  setsecondname,
-  email,
-  setemail,
-  password,
-  setpassword,
-  onSubmit,
-}) {
-  return (
-    <form className="signupForm" onSubmit={onSubmit}>
-      <div className="fieldGrid">
-        <Firstname firstname={firstname} setfirstname={setfirstname} />
-        <Secondname secondname={secondname} setsecondname={setsecondname} />
+          <p className="text-sm text-text-muted text-center mt-6">
+            Already have an account?{" "}
+            <a href="/login" className="text-secondary hover:underline">
+              Sign in
+            </a>
+          </p>
+        </div>
       </div>
 
-      <Email email={email} setemail={setemail} />
-      <Password password={password} setpassword={setpassword} />
+      {/* RIGHT – INFO PANEL */}
+      <div className="hidden md:flex items-center justify-center bg-surface px-10">
+        <div className="max-w-md text-center">
+          <div className="bg-white rounded-2xl h-48 mb-6 flex items-center justify-center text-text-muted shadow-sm">
+            Image
+          </div>
+          <h2 className="text-xl font-semibold mb-2">
+            Live Tracking & Real-time Updates
+          </h2>
+          <p className="text-text-muted">
+            Never miss your ride again. Track your matatu in real-time and plan
+            your journey with confidence.
+          </p>
 
-      <button type="submit" className="hiddenSubmit">
-        Submit
-      </button>
-    </form>
-  );
-}
-
-function Signupbutton({ text }) {
-  return (
-    <button type="submit" className="primaryBtn">
-      {text}
-    </button>
-  );
-}
-
-function Rightpanelimage() {
-  return (
-    <div className="rightImageWrap">
-      <div className="rightImagePlaceholder">Image</div>
+          <div className="flex justify-center gap-2 mt-6">
+            <span className="w-2 h-2 bg-primary rounded-full" />
+            <span className="w-2 h-2 bg-gray-300 rounded-full" />
+            <span className="w-2 h-2 bg-gray-300 rounded-full" />
+          </div>
+        </div>
+      </div>
     </div>
-  );
-}
-
-function Rightpanel({ title, body }) {
-  return (
-    <div className="rightText">
-      <h2 className="rightTitle">{title}</h2>
-      <p className="rightBody">{body}</p>
-    </div>
-  );
-}
-
-function Rightpaneldash({ total = 3, activeIndex = 0 }) {
-  const dots = Array.from({ length: total });
-  return (
-    <div className="dots">
-      {dots.map((_, i) => (
-        <span key={i} className={`dot ${i === activeIndex ? "dotActive" : ""}`} />
-      ))}
-    </div>
-  );
-}
-
-function Firstname({ firstname, setfirstname }) {
-  return (
-    <label className="field">
-      <span className="label">First name</span>
-      <input
-        value={firstname}
-        onChange={(e) => setfirstname(e.target.value)}
-        placeholder="First name"
-        autoComplete="given-name"
-      />
-    </label>
-  );
-}
-
-function Secondname({ secondname, setsecondname }) {
-  return (
-    <label className="field">
-      <span className="label">Second name</span>
-      <input
-        value={secondname}
-        onChange={(e) => setsecondname(e.target.value)}
-        placeholder="Second name"
-        autoComplete="family-name"
-      />
-    </label>
-  );
-}
-
-function Email({ email, setemail }) {
-  return (
-    <label className="field">
-      <span className="label">Email</span>
-      <input
-        value={email}
-        onChange={(e) => setemail(e.target.value)}
-        placeholder="email"
-        type="email"
-        autoComplete="email"
-      />
-    </label>
-  );
-}
-
-function Password({ password, setpassword }) {
-  return (
-    <label className="field">
-      <span className="label">Password</span>
-      <input
-        value={password}
-        onChange={(e) => setpassword(e.target.value)}
-        placeholder="password"
-        type="password"
-        autoComplete="new-password"
-      />
-    </label>
   );
 }

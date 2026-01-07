@@ -1,57 +1,38 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
-/* 2. Initialize Tailwind */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* 3. Apply Your Custom Theme Defaults */
+/* GLOBAL BASE */
+html,
+body,
+#root {
+  height: 100%;
+}
+
 body {
-  /* Use the variables we defined in tailwind.config.js */
   @apply bg-background text-text-main font-sans antialiased;
-  
-  /* Reset the default Vite centering behavior */
   margin: 0;
-  display: block; /* Important: Fixes the "everything centered" bug */
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 24px;
 }
 
+/* BUTTONS */
+.btn-primary {
+  @apply bg-primary text-white px-6 py-3 rounded-lg font-medium
+         hover:bg-primary-hover transition shadow-sm hover:shadow-md;
+}
+
+.btn-secondary {
+  @apply bg-secondary text-white px-6 py-3 rounded-lg font-medium
+         hover:bg-secondary-hover transition shadow-sm hover:shadow-md;
+}
+
+.btn-outline {
+  @apply border border-secondary text-secondary px-6 py-3 rounded-lg
+         hover:bg-secondary hover:text-white transition;
+}
+
+/* CARDS */
 .card {
-  width: 100%;
-  max-width: 380px;
-  padding: 28px;
-  border: 1px solid #ddd;
-  border-radius: 16px;
-}
-
-.top {
-  margin: 0 0 16px;
-  text-align: center;
-  font-size: 13px;
-}
-
-.brand {
-  display: grid;
-  place-items: center;
-  margin-bottom: 12px;
-}
-
-/* 4. Custom Scrollbar*/
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-surface;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-surface-light rounded-full;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-primary-hover;
+  @apply bg-white rounded-2xl p-8 shadow-sm hover:shadow-lg transition;
 }

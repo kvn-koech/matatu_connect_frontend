@@ -1,98 +1,93 @@
-import React from "react";
-import "../index.css";
 import matatuIcon from "../assets/Matatu_icon.png";
-import live_trackingicon from "../assets/live_trackingicon.png";
 
-function LandingPage() {
+export default function LandingPage() {
   return (
-    <main className="page">
-      <Header />
-
+    <main className="bg-background text-text-main">
       <Hero />
-
       <Features />
-
       <CtaSection />
-
       <Footer />
     </main>
   );
 }
 
-function Header() {
-  return (
-    <header className="header">
-      <div className="brand">
-        <img src={matatuIcon} alt="Matatu Connect" width="22" height="22" />
-        <span>Matatu Connect</span>
-      </div>
-
-      <nav className="nav">
-        <a href="#home">Home</a>
-        <a href="#features">Features</a>
-        <a href="#routes">Routes</a>
-        <a href="#support">Support</a>
-      </nav>
-    </header>
-  );
-}
+/* ---------------- HERO ---------------- */
 
 function Hero() {
   return (
-    <section className="hero" id="home">
-      <div className="heroLeft">
-        <p className="tag">Live tracking</p>
+    <section
+      id="home"
+      className="max-w-7xl mx-auto px-6 py-32 grid md:grid-cols-2 gap-12 items-center"
+    >
+      <div>
+        <p className="text-secondary font-semibold mb-4 uppercase tracking-wide">
+          Live tracking
+        </p>
 
-        <h1 className="heroTitle">
-          Track & Book <br />
-          Matatus in Real-Time
+        <h1 className="text-6xl font-extrabold leading-tight tracking-tight mb-6">
+          Track & Book <br /> Matatus in Real-Time
         </h1>
 
-        <p className="heroText">
+        <p className="text-text-muted text-lg mb-10">
           Navigate the city with confidence. Cashless payments, live route
           updates, and safer rides right from your pocket.
         </p>
 
-        <div className="heroActions">
-          <button type="button">Get Started</button>
-          <div className="tinyRow">
-            <span className="dot" />
-            <span className="dot" />
-            <span className="dot" />
-            <span className="tinyText">Easy onboarding</span>
+        <div className="flex items-center gap-8">
+          <button className="btn-primary shadow-md hover:shadow-lg">
+            Get Started
+          </button>
+
+          <div className="flex items-center gap-2 text-sm text-text-muted">
+            <span className="w-2 h-2 bg-primary rounded-full" />
+            <span className="w-2 h-2 bg-primary rounded-full" />
+            <span className="w-2 h-2 bg-primary rounded-full" />
+            <span>Easy onboarding</span>
           </div>
         </div>
       </div>
 
-      <div className="heroRight">
-        <div className="phoneMock">Preview</div>
+      <div className="bg-surface rounded-3xl h-80 flex flex-col items-center justify-center text-text-muted border">
+        <span className="text-sm uppercase tracking-wide mb-2">
+          Live Map Preview
+        </span>
+        <span className="text-xs">
+          Real-time matatu tracking
+        </span>
       </div>
     </section>
   );
 }
 
+/* ---------------- FEATURES ---------------- */
+
 function Features() {
   return (
-    <section className="section" id="features">
-      <h2>Why Choose Matatu Connect?</h2>
-      <p className="sectionText">
-        Experience the future of public transport in Kenya with our cutting-edge
-        features designed for safety and convenience.
-      </p>
+    <section id="features" className="bg-surface py-32">
+      <div className="max-w-7xl mx-auto px-6">
+        <h2 className="text-4xl font-bold mb-4">
+          Why Choose Matatu Connect?
+        </h2>
 
-      <div className="cards">
-        <FeatureCard
-          title="Live Tracking"
-          text="See nearby matatus in real-time and track your ride across the city."
-        />
-        <FeatureCard
-          title="M-Pesa Integrated"
-          text="Pay instantly with M-Pesa. Cashless, secure, and easy booking."
-        />
-        <FeatureCard
-          title="Safe Rides"
-          text="Verified drivers, route info, and ride details to help you travel with confidence."
-        />
+        <p className="text-text-muted mb-16 max-w-2xl text-lg">
+          Experience the future of public transport in Kenya with features
+          designed for safety and convenience.
+        </p>
+
+        <div className="grid md:grid-cols-3 gap-10">
+          <FeatureCard
+            title="Live Tracking"
+            text="Track matatus in real time across the city."
+          />
+          <FeatureCard
+            title="M-Pesa Integrated"
+            text="Cashless, secure, instant payments."
+          />
+          <FeatureCard
+            title="Safe Rides"
+            text="Verified drivers, routes, and trip details."
+          />
+        </div>
       </div>
     </section>
   );
@@ -100,49 +95,57 @@ function Features() {
 
 function FeatureCard({ title, text }) {
   return (
-    <article className="card">
-      <div className="iconBox"></div>
-      <h3>{title}</h3>
-      <p>{text}</p>
-    </article>
+    <div className="card">
+      <div className="w-12 h-12 bg-secondary-light rounded-xl mb-6" />
+      <h3 className="text-xl font-semibold mb-3">{title}</h3>
+      <p className="text-text-muted">{text}</p>
+    </div>
   );
 }
 
+/* ---------------- CTA ---------------- */
+
 function CtaSection() {
   return (
-    <section className="cta">
-      <h2>Ready to upgrade your commute?</h2>
-      <p className="sectionText">
-        Join thousands of commuters in Nairobi enjoying a smoother, safer, and
-        smarter ride today.
+    <section className="bg-secondary text-white py-28 text-center">
+      <h2 className="text-4xl font-bold mb-4">
+        Ready to upgrade your commute?
+      </h2>
+
+      <p className="text-blue-100 mb-10 max-w-xl mx-auto text-lg">
+        Smarter, safer, cashless matatu rides.
       </p>
-      <button type="button">Get started</button>
+
+      <button className="bg-white text-secondary px-10 py-4 rounded-lg font-medium hover:bg-blue-50 shadow">
+        Get started
+      </button>
     </section>
   );
 }
 
+/* ---------------- FOOTER ---------------- */
+
 function Footer() {
   return (
-    <footer className="footer" id="support">
-      <div className="footerTop">
-        <div className="brand">
-          <img src={matatuIcon} alt="Matatu Connect" width="18" height="18" />
-          <span>Matatu Connect</span>
+    <footer id="support" className="border-t bg-white">
+      <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between gap-6 text-sm text-text-muted">
+        <div className="flex items-center gap-2 font-semibold text-text-main">
+          <img src={matatuIcon} alt="Matatu Connect" className="w-5 h-5" />
+          Matatu Connect
         </div>
 
-        <div className="footerLinks">
-          <a href="#about">About</a>
-          <a href="#routes">Home</a>
-          <a href="#privacy">Privacy</a>
-          <a href="#terms">Terms of Service</a>
-          <a href="#contact">Contact</a>
+        <div className="flex gap-6 flex-wrap">
+          <a href="#about" className="hover:text-text-main">About</a>
+          <a href="#home" className="hover:text-text-main">Home</a>
+          <a href="#privacy" className="hover:text-text-main">Privacy</a>
+          <a href="#terms" className="hover:text-text-main">Terms</a>
+          <a href="#contact" className="hover:text-text-main">Contact</a>
         </div>
       </div>
 
-      <p className="copyright">
-        2025 Matatu Connect. All rights reserved.
-      </p>
+      <div className="text-center text-xs text-text-muted pb-6">
+        © 2025 Matatu Connect. All rights reserved.
+      </div>
     </footer>
   );
 }
-export default LandingPage;

@@ -7,16 +7,18 @@ const Sidebar = ({ role }) => {
       <h2 className="text-lg font-bold mb-4">Menu</h2>
       <ul className="space-y-2">
         {role === "driver" && (
-          <>
-            <li><Link to="/driver-dashboard">Driver Dashboard</Link></li>
-          </>
+          <li>
+            <Link to="/driver-dashboard">Driver Dashboard</Link>
+          </li>
         )}
         {role === "commuter" && (
-          <>
-            <li><Link to="/commuter-dashboard">Commuter Dashboard</Link></li>
-          </>
+          <li>
+            <Link to="/commuter-dashboard">Commuter Dashboard</Link>
+          </li>
         )}
-        <li><Link to="/">Home</Link></li>
+        <li>
+          <Link to="/">Home</Link>
+        </li>
       </ul>
     </aside>
   );

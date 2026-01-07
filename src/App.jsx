@@ -1,66 +1,119 @@
-// import LoginPage from "./pages/LoginPage.jsx";
-// import Commutersignup from "./pages/Commutersignup.jsx";
-// import ManagerSignup from  "./pages/ManagerSignup.jsx";
-// import DriverSignup from "./pages/DriverSignup.jsx";
-// import AdminDashboard from "./pages/AdminLogin.jsx";
-// import Homepage from "./pages/Homepage.jsx"
-// import {Routes, Route} from "react-router-dom";
-// import AdminLogin from "./pages/AdminLogin.jsx";
-// import DashboardOverview from "./pages/SaccoManagementDashboard.jsx";
-
-// function App() {
-//   return (
-//   <Routes>
-  
-//   < Route path="/admin" element={<AdminLogin />}  />
-//   < Route LoginPage path="/Login-Page" element={<LoginPage />} />
-//   < Route Commutersignup path= "/Commuter-signup" element={<Commutersignup />} />
-//   < Route ManagerSignup path="/Manager-Signup" element={< ManagerSignup/> }/>
-//   < Route DriverSignup path="/Driver-Signup" element={<DriverSignup />} />
-//   < Route Homepage path="/" element={<Homepage />} />
-//   < Route DashboardOverview path="/Dashboard-overview" element={<DashboardOverview />} />
-//   </Routes>
-// );}
-
-// export default App;
-
-
-import React from "react";
-import { Routes, Route } from "react-router-dom";
-import { AppProvider } from "./context/AppContext";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 // Pages
 import Homepage from "./pages/Homepage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
+import Commutersignup from "./pages/Commutersignup.jsx";
+import DriverSignup from "./pages/DriverSignup.jsx";
+import ManagerSignup from "./pages/ManagerSignup.jsx";
+import AdminLogin from "./pages/AdminLogin.jsx";
 import CommuterDashboard from "./pages/CommuterDashboard.jsx";
 import DriverDashboard from "./pages/DriverDashboard.jsx";
-import Commutersignup from "./pages/Commutersignup.jsx";
-import ManagerSignup from "./pages/ManagerSignup.jsx";
-import DriverSignup from "./pages/DriverSignup.jsx";
-import AdminLogin from "./pages/AdminLogin.jsx";
 import DashboardOverview from "./pages/SaccoManagementDashboard.jsx";
+
+// Layouts
+import MainLayout from "./components/layout/MainLayout.jsx";
+import PublicLayout from "./components/layout/PublicLayout.jsx";
+
+/* ===== DEV AUTH MOCK ===== */
+const isAuthenticated = true;
 
 function App() {
   return (
-    <AppProvider>
-      <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<Homepage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/commuter-signup" element={<Commutersignup />} />
-        <Route path="/manager-signup" element={<ManagerSignup />} />
-        <Route path="/driver-signup" element={<DriverSignup />} />
-        <Route path="/admin" element={<AdminLogin />} />
+    <Routes>
+      {/* ===== PUBLIC ROUTES (WITH NAVBAR) ===== */}
+      <Route
+        path="/"
+        element={
+          <PublicLayout>
+            <Homepage />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/login"
+        element={
+          <PublicLayout>
+            <LoginPage />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/commuter-signup"
+        element={
+          <PublicLayout>
+            <Commutersignup />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/driver-signup"
+        element={
+          <PublicLayout>
+            <DriverSignup />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/manager-signup"
+        element={
+          <PublicLayout>
+            <ManagerSignup />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <PublicLayout>
+            <AdminLogin />
+          </PublicLayout>
+        }
+      />
 
-        {/* Dashboards */}
-        <Route path="/dashboard-overview" element={<DashboardOverview />} />
-        <Route path="/driver" element={<DriverDashboard driverId={101} />} />
-        <Route path="/commuter" element={<CommuterDashboard />} />
+      {/* ===== DASHBOARDS (WITH SIDEBAR + NAVBAR) ===== */}
+      <Route
+        path="/commuter-dashboard"
+        element={
+          isAuthenticated ? (
+            <MainLayout role="commuter">
+              <CommuterDashboard />
+            </MainLayout>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
 
-        {/* Fallback */}
-        <Route path="*" element={<h1>404 – Page Not Found</h1>} />
-      </Routes>
-    </AppProvider>
+      <Route
+        path="/driver-dashboard"
+        element={
+          isAuthenticated ? (
+            <MainLayout role="driver">
+              <DriverDashboard driverId={101} />
+            </MainLayout>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+
+      <Route
+        path="/dashboard-overview"
+        element={
+          isAuthenticated ? (
+            <MainLayout role="manager">
+              <DashboardOverview />
+            </MainLayout>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+
+      {/* ===== FALLBACK ===== */}
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
   );
 }
 

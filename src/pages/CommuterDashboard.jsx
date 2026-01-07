@@ -22,72 +22,115 @@ const CommuterDashboard = () => {
 
   return (
     <MainLayout role="commuter">
-      <h2 className="text-2xl font-bold mb-4">Commuter Dashboard</h2>
-
-      <div className="mb-4 flex flex-wrap gap-4 items-center">
-        <input
-          type="text"
-          value={routeFilter}
-          placeholder="Route filter"
-          onChange={(e) => setRouteFilter(e.target.value)}
-          className="border p-1 rounded"
-        />
-        <input
-          type="number"
-          value={minSeats}
-          placeholder="Min seats"
-          onChange={(e) => setMinSeats(Number(e.target.value))}
-          className="border p-1 rounded w-20"
-        />
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="border p-1 rounded"
-        >
-          <option value="">All</option>
-          <option value="available">Available</option>
-          <option value="busy">Busy</option>
-        </select>
+      {/* Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">Commuter Dashboard</h1>
+        <p className="text-text-muted">
+          Find matatus, track routes, and manage your trips.
+        </p>
       </div>
 
-      <div className="map-container mb-6">
+      {/* Filters */}
+      <div className="card mb-6">
+        <div className="grid md:grid-cols-4 gap-4">
+          <input
+            type="text"
+            value={routeFilter}
+            placeholder="Filter by route"
+            onChange={(e) => setRouteFilter(e.target.value)}
+            className="border rounded-lg px-3 py-2"
+          />
+
+          <input
+            type="number"
+            value={minSeats}
+            placeholder="Min seats"
+            onChange={(e) => setMinSeats(Number(e.target.value))}
+            className="border rounded-lg px-3 py-2"
+          />
+
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="border rounded-lg px-3 py-2"
+          >
+            <option value="">All statuses</option>
+            <option value="available">Available</option>
+            <option value="busy">Busy</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Map */}
+      <div className="card mb-6">
+        <h3 className="font-semibold mb-3">Live Map</h3>
         <LiveMap
           vehicles={filteredVehicles.map((v) => ({
             ...v,
             lat: Number(v.lat),
             lng: Number(v.lng),
             route: Array.isArray(v.route)
-              ? v.route.map((p) => ({ lat: Number(p.lat), lng: Number(p.lng) }))
+              ? v.route.map((p) => ({
+                  lat: Number(p.lat),
+                  lng: Number(p.lng),
+                }))
               : [],
           }))}
           centerVehicle={filteredVehicles[0]}
         />
       </div>
 
-      <div className="mt-6">
-        <h3 className="text-xl font-semibold mb-2">Available Vehicles</h3>
-        <ul className="space-y-1">
-          {filteredVehicles.length > 0 ? (
-            filteredVehicles.map((v) => (
-              <li key={v.id} className="border p-2 rounded shadow-sm">
-                <strong>{v.name}</strong> - {v.status} - {v.passengerCapacity} seats
-                {v.routeName && <span> - Route: {v.routeName}</span>}
+      {/* Vehicles */}
+      <div className="card mb-6">
+        <h3 className="font-semibold mb-3">Available Vehicles</h3>
+
+        {filteredVehicles.length ? (
+          <ul className="space-y-3">
+            {filteredVehicles.map((v) => (
+              <li
+                key={v.id}
+                className="flex justify-between items-center border rounded-lg p-3"
+              >
+                <div>
+                  <p className="font-medium">{v.name}</p>
+                  <p className="text-sm text-text-muted">
+                    Route: {v.routeName || "N/A"}
+                  </p>
+                </div>
+
+                <div className="text-right text-sm">
+                  <p>{v.passengerCapacity} seats</p>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs ${
+                      v.status === "available"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-yellow-100 text-yellow-700"
+                    }`}
+                  >
+                    {v.status}
+                  </span>
+                </div>
               </li>
-            ))
-          ) : (
-            <li className="text-gray-500">No vehicles match the filters.</li>
-          )}
-        </ul>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-text-muted">No vehicles match the filters.</p>
+        )}
       </div>
 
+      {/* Bookings */}
       {bookingRequests.length > 0 && (
-        <div className="mt-6">
-          <h3 className="text-xl font-semibold mb-2">Your Booking Status</h3>
-          <ul className="space-y-1">
+        <div className="card">
+          <h3 className="font-semibold mb-3">Your Bookings</h3>
+          <ul className="space-y-3">
             {bookingRequests.map((b) => (
-              <li key={b.id} className="border p-2 rounded shadow-sm">
-                <p><strong>Vehicle:</strong> {b.vehicleName}</p>
-                <p><strong>Status:</strong> {b.status}</p>
+              <li key={b.id} className="border rounded-lg p-3">
+                <p>
+                  <strong>Vehicle:</strong> {b.vehicleName}
+                </p>
+                <p className="text-sm text-text-muted">
+                  Status: {b.status}
+                </p>
               </li>
             ))}
           </ul>
