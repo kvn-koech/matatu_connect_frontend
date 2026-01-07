@@ -10,7 +10,8 @@ import AdminLogin from "./pages/AdminLogin.jsx";
 import CommuterDashboard from "./pages/CommuterDashboard.jsx";
 import DriverDashboard from "./pages/DriverDashboard.jsx";
 import DashboardOverview from "./pages/SaccoManagementDashboard.jsx";
-
+import MpesaConfirmation from"./pages/MpesaConfirmation.jsx";
+import NotFound from "./pages/NotFound.jsx";
 // Layouts
 import MainLayout from "./components/layout/MainLayout.jsx";
 import PublicLayout from "./components/layout/PublicLayout.jsx";
@@ -30,6 +31,22 @@ function App() {
           </PublicLayout>
         }
       />
+      <Route
+        path="*"
+        element={
+          
+            <NotFound/>
+            
+            }
+         />
+      <Route
+        path="/Mpesa-confirmation"
+        element={
+          <PublicLayout>
+            <Mpesa-confirmation/>
+            </PublicLayout>
+            }
+         />
       <Route
         path="/login"
         element={

@@ -152,7 +152,7 @@ function ManagerSignup() {
     </div>
   );
 }
-export default  ManagerSignup
+
 function Field({ label, value, onChange, placeholder, type = "text" }) {
   return (
     <label style={{ display: "grid", gap: 6 }}>
@@ -161,3 +161,5 @@ function Field({ label, value, onChange, placeholder, type = "text" }) {
     </label>
   );
 }
+
+export default  ManagerSignup
