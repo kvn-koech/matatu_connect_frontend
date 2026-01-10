@@ -38,7 +38,10 @@ export default function CommuterSignup() {
       await signup(payload);
       navigate("/commuter-dashboard");
     } catch (err) {
-      setError("Failed to create account. Please try again.");
+      console.error("Signup error:", err);
+      // Extract specific error message from backend response if available
+      const errorMessage = err.response?.data?.error || "Failed to create account. Please try again.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
