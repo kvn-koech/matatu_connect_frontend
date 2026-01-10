@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import matatuIcon from "../assets/Matatu_icon.png"; 
-import "../index.css";
+import { Link } from "react-router-dom";
+import matatuIcon from "../assets/Matatu_icon.png";
 
 function ManagerSignup() {
   const [firstName, setFirstName] = useState("");
@@ -13,153 +13,190 @@ function ManagerSignup() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ firstName, lastName, saccoName, email, workEmail, password, agree });
+    console.log({
+      firstName,
+      lastName,
+      saccoName,
+      email,
+      workEmail,
+      password,
+      agree,
+    });
   };
 
   return (
-    <div className="page">
-      <header className="top">
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <img src={matatuIcon} alt="Matatu Connect" width="28" height="28" />
-          <div>
-            <div style={{ fontWeight: 600, fontSize: 14 }}>Matatu Connect</div>
-            <div style={{ fontSize: 10, opacity: 0.7 }}>MANAGER PORTAL</div>
+    <div className="min-h-screen bg-background text-text-main flex flex-col">
+      {/* HEADER */}
+      <header className="border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <img src={matatuIcon} alt="Matatu Connect" className="w-7 h-7" />
+            <div>
+              <p className="font-semibold leading-none">Matatu Connect</p>
+              <p className="text-xs text-text-muted">MANAGER PORTAL</p>
+            </div>
           </div>
-        </div>
 
-        <div style={{ fontSize: 12 }}>
-          <span style={{ opacity: 0.7 }}>Already a partner?</span>{" "}
-          <a href="#" style={{ fontWeight: 600 }}>Log in →</a>
+          <p className="text-sm text-text-muted">
+            Already a partner?{" "}
+            <Link to="/login" className="text-primary font-semibold">
+              Log in →
+            </Link>
+          </p>
         </div>
       </header>
 
-      <main className="wrap">
-        <section className="grid">
-          <section className="left">
-            <div style={{ fontSize: 12, fontWeight: 600, opacity: 0.8 }}>
-              OFFICIAL PARTNER ACCESS
-            </div>
+      {/* CONTENT */}
+      <main className="flex-1 max-w-7xl mx-auto px-6 py-16 grid lg:grid-cols-2 gap-16 items-start">
+        {/* LEFT INFO */}
+        <section>
+          <p className="text-sm font-semibold text-primary mb-4">
+            OFFICIAL PARTNER ACCESS
+          </p>
 
-            <h1 style={{ margin: "14px 0 10px" }}>
-              Manage your fleet efficiently.
-            </h1>
+          <h1 className="text-4xl font-bold mb-4">
+            Manage your fleet efficiently.
+          </h1>
 
-            <p style={{ margin: 0, opacity: 0.75, maxWidth: 520 }}>
-              Join Nairobi’s smartest transport network. Track revenue, monitor driver
-              performance, and optimize routes in real time.
-            </p>
+          <p className="text-text-muted max-w-lg mb-8">
+            Join Nairobi’s smartest transport network. Track revenue, monitor
+            driver performance, and optimize routes in real time.
+          </p>
 
-            <ul style={{ marginTop: 18, paddingLeft: 18, opacity: 0.9 }}>
-              <li style={{ marginBottom: 8 }}>Real-time Analytics</li>
-              <li>Direct M-Pesa Integration</li>
-            </ul>
+          <ul className="space-y-3 text-text-muted">
+            <li>✔ Real-time analytics & reporting</li>
+            <li>✔ Direct M-Pesa integration</li>
+            <li>✔ Fleet & driver monitoring</li>
+          </ul>
 
-            <p style={{ marginTop: 18, opacity: 0.7, fontSize: 12 }}>
-              Trusted by 500+ SACCO managers
-            </p>
-          </section>
-
-          <aside className="card">
-            <h2 style={{ margin: 0 }}>Create Manager Account</h2>
-            <p style={{ marginTop: 6, opacity: 0.75 }}>
-              Enter your details to register your fleet.
-            </p>
-
-            <form onSubmit={handleSubmit} style={{ display: "grid", gap: 10 }}>
-              <div className="two">
-                <Field
-                  label="First name"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="John"
-                />
-                <Field
-                  label="Last name"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Kamau"
-                />
-              </div>
-
-              <Field
-                label="Sacco name / fleet ID"
-                value={saccoName}
-                onChange={(e) => setSaccoName(e.target.value)}
-                placeholder="e.g. Super Metro"
-              />
-
-              <Field
-                label="Email address"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="email@example.com"
-              />
-
-              <Field
-                label="Work email"
-                type="email"
-                value={workEmail}
-                onChange={(e) => setWorkEmail(e.target.value)}
-                placeholder="manager@example.com"
-              />
-
-              <Field
-                label="Password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-              />
-
-              <label style={{ display: "flex", gap: 10, fontSize: 12, opacity: 0.8 }}>
-                <input
-                  type="checkbox"
-                  checked={agree}
-                  onChange={(e) => setAgree(e.target.checked)}
-                />
-                <span>
-                  I agree to the <a href="#">Terms</a> and <a href="#">Privacy</a>.
-                </span>
-              </label>
-
-              <button className="primary" type="submit" disabled={!agree}>
-                Create Account
-              </button>
-
-              <div style={{ textAlign: "center", fontSize: 12, opacity: 0.7 }}>
-                Or continue with
-              </div>
-
-              <button className="secondary" type="button">
-                Sign up with Google
-              </button>
-            </form>
-          </aside>
+          <p className="mt-8 text-sm text-text-muted">
+            Trusted by 500+ SACCO managers
+          </p>
         </section>
 
-        <footer className="foot">
-          <span style={{ opacity: 0.7, fontSize: 12 }}>
-            2024 Matatu Connect. All rights reserved.
-          </span>
-          <div style={{ display: "flex", gap: 14, fontSize: 12, opacity: 0.7 }}>
-            <a href="#">Help Center</a>
+        {/* FORM CARD */}
+        <aside className="card max-w-xl w-full">
+          <h2 className="text-2xl font-semibold mb-1">
+            Create Manager Account
+          </h2>
+          <p className="text-text-muted mb-6">
+            Enter your details to register your fleet.
+          </p>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label="First name"
+                value={firstName}
+                onChange={setFirstName}
+                placeholder="John"
+              />
+              <Input
+                label="Last name"
+                value={lastName}
+                onChange={setLastName}
+                placeholder="Kamau"
+              />
+            </div>
+
+            <Input
+              label="SACCO name / Fleet ID"
+              value={saccoName}
+              onChange={setSaccoName}
+              placeholder="Super Metro"
+            />
+
+            <Input
+              label="Email address"
+              type="email"
+              value={email}
+              onChange={setEmail}
+              placeholder="email@example.com"
+            />
+
+            <Input
+              label="Work email"
+              type="email"
+              value={workEmail}
+              onChange={setWorkEmail}
+              placeholder="manager@example.com"
+            />
+
+            <Input
+              label="Password"
+              type="password"
+              value={password}
+              onChange={setPassword}
+              placeholder="••••••••"
+            />
+
+            <label className="flex items-center gap-2 text-sm text-text-muted">
+              <input
+                type="checkbox"
+                checked={agree}
+                onChange={(e) => setAgree(e.target.checked)}
+                className="accent-primary"
+              />
+              <span>
+                I agree to the{" "}
+                <a href="#" className="text-primary">
+                  Terms
+                </a>{" "}
+                and{" "}
+                <a href="#" className="text-primary">
+                  Privacy
+                </a>
+                .
+              </span>
+            </label>
+
+            <button
+              type="submit"
+              disabled={!agree}
+              className="btn-primary w-full disabled:opacity-50"
+            >
+              Create Account
+            </button>
+
+            <div className="text-center text-sm text-text-muted">
+              Or continue with
+            </div>
+
+            <button type="button" className="btn-secondary w-full">
+              Sign up with Google
+            </button>
+          </form>
+        </aside>
+      </main>
+
+      {/* FOOTER */}
+      <footer className="border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6 py-6 flex justify-between text-sm text-text-muted">
+          <span>© 2024 Matatu Connect</span>
+          <div className="flex gap-6">
+            <a href="#">Help</a>
             <a href="#">Privacy</a>
             <a href="#">Terms</a>
           </div>
-        </footer>
-      </main>
+        </div>
+      </footer>
     </div>
   );
 }
 
-function Field({ label, value, onChange, placeholder, type = "text" }) {
+function Input({ label, value, onChange, placeholder, type = "text" }) {
   return (
-    <label style={{ display: "grid", gap: 6 }}>
-      <span style={{ fontSize: 12, opacity: 0.75 }}>{label}</span>
-      <input value={value} onChange={onChange} placeholder={placeholder} type={type} />
-    </label>
+    <div>
+      <label className="text-sm text-text-muted">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="mt-1 w-full rounded-lg bg-black/30 border border-white/10 px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary"
+      />
+    </div>
   );
 }
 
-export default  ManagerSignup
+export default ManagerSignup;
