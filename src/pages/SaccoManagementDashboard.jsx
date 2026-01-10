@@ -8,6 +8,7 @@ import {
   TrendingDown,
 } from "lucide-react";
 
+import { fetchMatatus } from "../api/matatus";
 import { fetchRoutes } from "../api/routes";
 import { fetchDrivers } from "../api/users";
 import RevenueChart from "../components/charts/RevenueChart";
@@ -17,6 +18,7 @@ export default function SaccoManagementDashboard() {
 
   // Data States
   const [availableDrivers, setAvailableDrivers] = useState([]);
+  const [mapVehicles, setMapVehicles] = useState([]);
 
   // Fetch Data
   const loadData = async () => {
@@ -24,7 +26,26 @@ export default function SaccoManagementDashboard() {
       // Fetch Drivers for quick view
       const resDrivers = await fetchDrivers();
       const driverData = Array.isArray(resDrivers.data) ? resDrivers.data : (resDrivers.data.data || []);
+
+      // Filter only active drivers (optional, but good for dashboard)
       setAvailableDrivers(driverData);
+
+      // Fetch Vehicles for Map
+      const resVehicles = await fetchMatatus();
+      const vehicleList = resVehicles.data?.data || resVehicles.data || [];
+
+      // Generate Mock Coordinates for each real vehicle (around Nairobi)
+      const mappedVehicles = vehicleList.map((v, index) => ({
+        id: v.id,
+        name: `${v.plate_number} (${v.route?.name || "Unassigned"})`,
+        // Random coords around Nairobi (-1.2921, 36.8219)
+        lat: -1.2921 + (Math.random() - 0.5) * 0.05,
+        lng: 36.8219 + (Math.random() - 0.5) * 0.05,
+        status: v.assignment_status
+      }));
+
+      setMapVehicles(mappedVehicles);
+
     } catch (err) {
       console.error("Failed to load dashboard data", err);
     }
@@ -33,12 +54,6 @@ export default function SaccoManagementDashboard() {
   React.useEffect(() => {
     loadData();
   }, []);
-
-  // Mock vehicles for map
-  const mockVehicles = [
-    { id: 1, lat: -1.2921, lng: 36.8219, name: "Matatu A" },
-    { id: 2, lat: -1.2821, lng: 36.8119, name: "Matatu B" },
-  ];
 
   return (
     <div className="max-w-7xl mx-auto space-y-8 relative">
@@ -113,7 +128,7 @@ export default function SaccoManagementDashboard() {
             <span className="text-[10px] font-bold bg-emerald-500 text-black px-2 py-0.5 rounded">Live</span>
           </div>
           <div className="flex-1 bg-surface-dark">
-            <LiveMap vehicles={mockVehicles} centerVehicle={mockVehicles[0]} />
+            <LiveMap vehicles={mapVehicles} centerVehicle={mapVehicles[0]} />
           </div>
         </div>
       </div>

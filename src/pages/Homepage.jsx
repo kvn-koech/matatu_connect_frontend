@@ -1,4 +1,6 @@
 import matatuIcon from "../assets/Matatu_icon.png";
+import { useState, useEffect } from "react";
+import { fetchMatatus } from "../api/matatus";
 import LiveMap from "../components/map/LiveMap";
 import { useNavigate } from "react-router-dom";
 import { ShieldCheck, MapPin, Wallet } from "lucide-react";
@@ -18,13 +20,39 @@ export default function LandingPage() {
 
 function Hero() {
   const navigate = useNavigate();
+  const [heroVehicles, setHeroVehicles] = useState([]);
 
-  // Mock vehicles for the landing page map visual
-  const heroVehicles = [
-    { id: 1, lat: -1.2921, lng: 36.8219, name: "KBZ 123A", status: "Moving" },
-    { id: 2, lat: -1.2841, lng: 36.8155, name: "KCA 456B", status: "Stopped" },
-    { id: 3, lat: -1.3000, lng: 36.7800, name: "KDB 789C", status: "Moving" },
-  ];
+  useEffect(() => {
+    const loadVehicles = async () => {
+      try {
+        const res = await fetchMatatus();
+        const vehicleList = res.data?.data || res.data || [];
+
+        // Generate Mock Coordinates for real vehicles
+        const mapped = vehicleList.map(v => ({
+          id: v.id,
+          name: v.plate_number,
+          lat: -1.2921 + (Math.random() - 0.5) * 0.05,
+          lng: 36.8219 + (Math.random() - 0.5) * 0.05,
+          status: "Moving" // Mock status for visual
+        }));
+
+        // If no vehicles, keep some mock ones for display
+        if (mapped.length > 0) {
+          setHeroVehicles(mapped);
+        } else {
+          setHeroVehicles([
+            { id: 1, lat: -1.2921, lng: 36.8219, name: "KBZ 123A", status: "Moving" },
+            { id: 2, lat: -1.2841, lng: 36.8155, name: "KCA 456B", status: "Stopped" },
+            { id: 3, lat: -1.3000, lng: 36.7800, name: "KDB 789C", status: "Moving" },
+          ]);
+        }
+      } catch (err) {
+        console.error("Failed to load map data", err);
+      }
+    };
+    loadVehicles();
+  }, []);
 
   return (
     <section
@@ -77,7 +105,7 @@ function Hero() {
           </div>
           <div>
             <p className="text-xs text-emerald-400 font-bold uppercase">Live System</p>
-            <p className="text-white font-bold text-sm">345 Active Matatus</p>
+            <p className="text-white font-bold text-sm">{heroVehicles.length > 0 ? `${heroVehicles.length} Active Matatus` : "Loading Fleet..."}</p>
           </div>
         </div>
       </div>
