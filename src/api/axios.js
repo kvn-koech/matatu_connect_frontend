@@ -6,7 +6,7 @@ import axios from 'axios';
  * - Falls back to localhost for development
  */
 const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+    import.meta.env.VITE_API_BASE_URL || '/api';
 
 /**
  * Create Axios instance
