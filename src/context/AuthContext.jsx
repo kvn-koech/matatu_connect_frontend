@@ -13,9 +13,14 @@ export const AuthProvider = ({ children }) => {
 
   // Load user from local storage on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem("mc_user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    try {
+      const storedUser = localStorage.getItem("mc_user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (error) {
+      console.error("Failed to parse user from local storage:", error);
+      localStorage.removeItem("mc_user");
     }
     setLoading(false);
   }, []);

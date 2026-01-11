@@ -1,0 +1,31 @@
+
+> matatu_connect_frontend@0.0.0 build
+> vite build
+
+vite v7.3.1 building client environment for production...
+transforming...
+
+/noise.png referenced in /noise.png didn't resolve at build time, it will remain unchanged to be resolved at runtime
+✓ 2417 modules transformed.
+✗ Build failed in 5.91s
+error during build:
+src/pages/Homepage.jsx (3:9): "fetchMatatus" is not exported by "src/api/matatus.js", imported by "src/pages/Homepage.jsx".
+file: /home/kp/Development/phase5/matatu_connect_frontend/src/pages/Homepage.jsx:3:9
+
+1: import matatuIcon from "../assets/Matatu_icon.png";
+2: import { useState, useEffect } from "react";
+3: import { fetchMatatus } from "../api/matatus";
+            ^
+4: import LiveMap from "../components/map/LiveMap";
+5: import { useNavigate } from "react-router-dom";
+
+    at getRollupError (file:///home/kp/Development/phase5/matatu_connect_frontend/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at error (file:///home/kp/Development/phase5/matatu_connect_frontend/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
+    at Module.error (file:///home/kp/Development/phase5/matatu_connect_frontend/node_modules/rollup/dist/es/shared/node-entry.js:17022:16)
+    at Module.traceVariable (file:///home/kp/Development/phase5/matatu_connect_frontend/node_modules/rollup/dist/es/shared/node-entry.js:17478:29)
+    at ModuleScope.findVariable (file:///home/kp/Development/phase5/matatu_connect_frontend/node_modules/rollup/dist/es/shared/node-entry.js:15141:39)
+    at FunctionScope.findVariable (file:///home/kp/Development/phase5/matatu_connect_frontend/node_modules/rollup/dist/es/shared/node-entry.js:5688:38)
+    at FunctionBodyScope.findVariable (file:///home/kp/Development/phase5/matatu_connect_frontend/node_modules/rollup/dist/es/shared/node-entry.js:5688:38)
+    at ReturnValueScope.findVariable (file:///home/kp/Development/phase5/matatu_connect_frontend/node_modules/rollup/dist/es/shared/node-entry.js:5688:38)
+    at FunctionBodyScope.findVariable (file:///home/kp/Development/phase5/matatu_connect_frontend/node_modules/rollup/dist/es/shared/node-entry.js:5688:38)
+    at ReturnValueScope.findVariable (file:///home/kp/Development/phase5/matatu_connect_frontend/node_modules/rollup/dist/es/shared/node-entry.js:5688:38)
