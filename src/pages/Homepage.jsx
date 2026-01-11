@@ -124,7 +124,7 @@ function Features() {
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <span className="text-emerald-400 font-bold tracking-wider uppercase text-sm mb-2 block">Why Choose Matatu Connect?</span>
         <h2 className="text-4xl font-bold mb-6 text-white">
-          The Smark Way to Commute
+          The Smart Way to Commute
         </h2>
 
         <p className="text-gray-400 mb-16 max-w-2xl text-lg">
