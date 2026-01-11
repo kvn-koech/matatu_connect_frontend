@@ -35,15 +35,27 @@ export default function LoginPage() {
       console.log("Logged in user role:", user.role); // Debugging log
 
       // VALIDATE SELECTED ROLE VS ACTUAL ROLE
-      let isRoleValid = false;
-      if (role === "driver" && user.role === "driver") isRoleValid = true;
-      else if (role === "manager" && (user.role === "sacco_manager" || user.role === "manager")) isRoleValid = true;
-      else if (role === "commuter" && user.role === "commuter") isRoleValid = true;
+      // VALIDATE SELECTED ROLE VS ACTUAL ROLE (Strict & Case-Insensitive)
+      const selectedRole = role.toLowerCase().trim();
+      const userRole = (user.role || "").toLowerCase().trim();
 
-      if (!isRoleValid) {
-        // Enforce restriction
-        const formattedRole = role.charAt(0).toUpperCase() + role.slice(1);
-        setError(`Access Denied: You are not registered as a ${formattedRole}.`);
+      console.log(`Role Verification: Selected='${selectedRole}', Actual='${userRole}'`);
+
+      let isAllowed = false;
+
+      if (selectedRole === "commuter") {
+        isAllowed = (userRole === "commuter");
+      } else if (selectedRole === "driver") {
+        isAllowed = (userRole === "driver");
+      } else if (selectedRole === "manager") {
+        isAllowed = (userRole === "manager" || userRole === "sacco_manager");
+      }
+
+      if (!isAllowed) {
+        const expected = selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1);
+        const actual = userRole ? (userRole.charAt(0).toUpperCase() + userRole.slice(1)) : "Unknown";
+
+        setError(`Login Restricted: This login is for ${expected}s only. Your account is a ${actual} account.`);
         logout(); // Clear session immediately
         return;
       }
