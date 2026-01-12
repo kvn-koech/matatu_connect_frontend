@@ -3,9 +3,11 @@ import LiveMap from "../components/map/LiveMap";
 import { useAuth } from "../context/AuthContext";
 import { useApp } from "../context/AppContext";
 import { useSocket } from "../context/SocketContext";
-import { Clock, LogOut, MapPin, Navigation, Phone, Search, Users, Wallet, CheckCircle, XCircle, Bell } from "lucide-react";
+import { Clock, LogOut, MapPin, Navigation, Phone, Search, Users, Wallet, CheckCircle, XCircle, Bell, CreditCard } from "lucide-react";
 import { acceptVehicle, rejectVehicle, fetchMatatus } from "../api/matatus";
 import { fetchBookings, updateBookingStatus } from "../api/bookings";
+import { triggerStkPush } from "../api/payment";
+import { submitDriverLog } from "../api/logs";
 
 const DriverDashboard = () => {
   const { vehicles, setVehicles } = useApp();
@@ -14,6 +16,17 @@ const DriverDashboard = () => {
   const [online, setOnline] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [bookings, setBookings] = useState([]);
+
+  // Payment Modal State
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedBookingForPayment, setSelectedBookingForPayment] = useState(null);
+  const [paymentForm, setPaymentForm] = useState({ phone: "", amount: "" });
+  const [isSendingPayment, setIsSendingPayment] = useState(false);
+
+  // Log Modal State
+  const [showLogModal, setShowLogModal] = useState(false);
+  const [logForm, setLogForm] = useState({ passengers: "", fuel: "", mileage: "" });
+  const [isSubmittingLog, setIsSubmittingLog] = useState(false);
 
   // Find vehicle assigned to this driver
   const myVehicle = useMemo(() => {
@@ -98,6 +111,56 @@ const DriverDashboard = () => {
     }
   };
 
+  // PAYMENT HANDLERS
+  const openPaymentModal = (booking) => {
+    setSelectedBookingForPayment(booking);
+    setPaymentForm({ phone: "", amount: "50" }); // Default amount or dynamic based on route
+    setShowPaymentModal(true);
+  };
+
+  const handlePaymentSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedBookingForPayment) return;
+
+    setIsSendingPayment(true);
+    try {
+      await triggerStkPush({
+        phone_number: paymentForm.phone,
+        amount: Number(paymentForm.amount),
+        booking_id: selectedBookingForPayment.id
+      });
+      alert(`Payment Request sent to ${paymentForm.phone}. Ask passenger to check their phone.`);
+      setShowPaymentModal(false);
+      setPaymentForm({ phone: "", amount: "" });
+    } catch (err) {
+      console.error("Payment Error", err);
+      alert("Failed to send payment request: " + (err.response?.data?.error || err.message));
+    } finally {
+      setIsSendingPayment(false);
+    }
+  };
+
+  // LOG HANDLERS
+  const handleLogSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmittingLog(true);
+    try {
+      await submitDriverLog({
+        passengers: logForm.passengers,
+        fuel: logForm.fuel,
+        mileage: logForm.mileage
+      });
+      alert("Daily Log Submitted Successfully!");
+      setShowLogModal(false);
+      setLogForm({ passengers: "", fuel: "", mileage: "" });
+    } catch (err) {
+      console.error("Log Error", err);
+      alert("Failed to submit log: " + (err.response?.data?.error || err.message));
+    } finally {
+      setIsSubmittingLog(false);
+    }
+  };
+
   // PENDING ASSIGNMENT MODAL
   if (myVehicle && myVehicle.assignment_status === "pending") {
     // ... (Modal Content - Unchanged)
@@ -135,15 +198,19 @@ const DriverDashboard = () => {
     );
   }
 
-  // Transform bookings to UI format
-  const upcomingPickups = bookings.map((b, idx) => ({
-    id: b.id,
-    name: b.user_name || "Passenger",
-    location: "Boarding Point", // Could get from route origin
-    time: "Ready",
-    type: idx === 0 ? "next" : "upcoming",
-    avatar: `https://i.pravatar.cc/150?img=${(b.id % 70) + 1}`
-  }));
+  // Transform bookings to UI format (exclude rejected)
+  const upcomingPickups = bookings
+    .filter(b => b.status !== 'rejected')  // Only show pending and confirmed
+    .map((b, idx) => ({
+      id: b.id,
+      name: b.user_name || "Passenger",
+      location: "Boarding Point", // Could get from route origin
+      time: "Ready",
+      type: idx === 0 ? "next" : "upcoming",
+      status: b.status,  // Add status for display
+      seatNumber: b.seat_number,
+      avatar: `https://i.pravatar.cc/150?img=${(b.id % 70) + 1}`
+    }));
 
   // Fallback if no bookings
   if (upcomingPickups.length === 0 && myVehicle) {
@@ -187,13 +254,26 @@ const DriverDashboard = () => {
             </div>
           </div>
 
-          <button
-            onClick={logout}
-            className="flex items-center gap-2 px-4 py-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors text-sm font-medium border border-red-500/20"
-          >
-            <LogOut size={16} />
-            Logout
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                console.log("Opening Log Modal");
+                setShowLogModal(true);
+              }}
+              className="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors font-bold text-sm shadow-md"
+            >
+              <Clock className="w-4 h-4" />
+              Log Stats
+            </button>
+
+            <button
+              onClick={logout}
+              className="flex items-center gap-2 px-4 py-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors text-sm font-medium border border-red-500/20"
+            >
+              <LogOut size={16} />
+              Logout
+            </button>
+          </div>
         </div>
       </div>
 
@@ -206,7 +286,9 @@ const DriverDashboard = () => {
           <div className="relative z-10 flex justify-between items-start">
             <div>
               <p className="font-medium opacity-80 mb-1">Today's Earnings</p>
-              <h2 className="text-5xl font-bold mb-4">KES4,500</h2>
+              <h2 className="text-5xl font-bold mb-4">
+                KES {bookings.reduce((sum, b) => sum + (b.payment_status === 'completed' ? (b.payment_amount || 0) : 0), 0).toLocaleString()}
+              </h2>
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-black/10 rounded-full text-xs font-semibold">
                 <span>📈 +12% vs yesterday</span>
               </div>
@@ -254,27 +336,39 @@ const DriverDashboard = () => {
               </div>
               <div className="space-y-3">
                 {bookings.filter(b => b.status === 'pending').map(booking => (
-                  <div key={booking.id} className="bg-white/5 p-4 rounded-xl border border-white/10 flex items-center justify-between">
-                    <div>
-                      <p className="font-bold text-white">{booking.user_name}</p>
-                      <p className="text-xs text-text-muted">Seat: {booking.seat_number} • {booking.payment_status}</p>
+                  <div key={booking.id} className="bg-white/5 p-4 rounded-xl border border-white/10 flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-bold text-white">{booking.user_name}</p>
+                        <p className="text-xs text-text-muted">Seat: {booking.seat_number} • {booking.payment_status}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleBookingAction(booking.id, 'reject')}
+                          className="p-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors"
+                          title="Reject"
+                        >
+                          <XCircle className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={() => handleBookingAction(booking.id, 'accept')}
+                          className="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg hover:bg-emerald-500/20 transition-colors"
+                          title="Accept"
+                        >
+                          <CheckCircle className="w-5 h-5" />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex gap-2">
+
+                    {/* Payment Trigger Button (Only if not paid) */}
+                    {booking.payment_status !== 'completed' && (
                       <button
-                        onClick={() => handleBookingAction(booking.id, 'reject')}
-                        className="p-2 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-colors"
-                        title="Reject"
+                        onClick={() => openPaymentModal(booking)}
+                        className="w-full py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors border border-blue-500/20"
                       >
-                        <XCircle className="w-5 h-5" />
+                        <CreditCard className="w-4 h-4" /> Request M-Pesa Payment
                       </button>
-                      <button
-                        onClick={() => handleBookingAction(booking.id, 'accept')}
-                        className="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg hover:bg-emerald-500/20 transition-colors"
-                        title="Accept"
-                      >
-                        <CheckCircle className="w-5 h-5" />
-                      </button>
-                    </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -305,10 +399,20 @@ const DriverDashboard = () => {
                     <div className="flex items-center gap-4">
                       <img src={pickup.avatar} alt={pickup.name} className="w-10 h-10 rounded-full object-cover border-2 border-surface" />
                       <div>
-                        <p className="font-bold text-white text-sm">{pickup.name}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-bold text-white text-sm">{pickup.name}</p>
+                          {pickup.status && (
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${pickup.status === 'confirmed' ? 'bg-emerald-500/20 text-emerald-400' :
+                                'bg-yellow-500/20 text-yellow-500'
+                              }`}>
+                              {pickup.status}
+                            </span>
+                          )}
+                        </div>
                         <div className="flex items-center gap-1 text-xs text-text-muted mt-0.5">
                           <MapPin className="w-3 h-3" />
                           {pickup.location}
+                          {pickup.seatNumber && <span className="ml-2">• Seat {pickup.seatNumber}</span>}
                         </div>
                       </div>
                     </div>
@@ -426,6 +530,126 @@ const DriverDashboard = () => {
         {/* END COLUMN 2 */}
 
       </div>{/* End Bottom Grid */}
+
+      {/* PAYMENT MODAL */}
+      {
+        showPaymentModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <div className="mc-card w-full max-w-sm animate-in zoom-in duration-200">
+              <div className="p-6 border-b border-white/10 flex justify-between items-center">
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <Wallet className="text-emerald-400" /> Request Payment
+                </h2>
+                <button onClick={() => setShowPaymentModal(false)} className="text-text-muted hover:text-white">✕</button>
+              </div>
+
+              <form onSubmit={handlePaymentSubmit} className="p-6 space-y-4">
+                <div className="bg-emerald-500/10 p-4 rounded-xl border border-emerald-500/20 mb-4">
+                  <p className="text-sm text-emerald-400 font-bold mb-1">Passenger</p>
+                  <p className="text-white">{selectedBookingForPayment?.user_name}</p>
+                </div>
+
+                <div>
+                  <label className="mc-label">M-Pesa Phone Number</label>
+                  <input
+                    name="phone"
+                    placeholder="0712345678"
+                    className="mc-input"
+                    value={paymentForm.phone}
+                    onChange={(e) => setPaymentForm({ ...paymentForm, phone: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="mc-label">Amount (KES)</label>
+                  <input
+                    name="amount"
+                    type="number"
+                    placeholder="50"
+                    className="mc-input"
+                    value={paymentForm.amount}
+                    onChange={(e) => setPaymentForm({ ...paymentForm, amount: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <button
+                  disabled={isSendingPayment}
+                  className="mc-btn-primary w-full py-3 flex items-center justify-center gap-2"
+                >
+                  {isSendingPayment ? <span className="animate-spin">⌛</span> : <Phone className="w-4 h-4" />}
+                  {isSendingPayment ? "Sending Request..." : "Send STK Push"}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
+      {/* LOG STATS MODAL */}
+      {showLogModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4">
+          <div className="mc-card w-full max-w-sm animate-in zoom-in duration-200 border border-purple-500/30">
+            <div className="p-6 border-b border-white/10 flex justify-between items-center">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <TrendingUp className="text-purple-400" /> Log Daily Stats
+              </h2>
+              <button onClick={() => setShowLogModal(false)} className="text-text-muted hover:text-white">✕</button>
+            </div>
+
+            <form onSubmit={handleLogSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="mc-label">Total Passengers Carried</label>
+                <input
+                  name="passengers"
+                  type="number"
+                  placeholder="e.g 150"
+                  className="mc-input"
+                  value={logForm.passengers}
+                  onChange={(e) => setLogForm({ ...logForm, passengers: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mc-label">Fuel Used (L)</label>
+                  <input
+                    name="fuel"
+                    type="number"
+                    placeholder="e.g 45"
+                    className="mc-input"
+                    value={logForm.fuel}
+                    onChange={(e) => setLogForm({ ...logForm, fuel: e.target.value })}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="mc-label">Mileage (Km)</label>
+                  <input
+                    name="mileage"
+                    type="number"
+                    placeholder="e.g 200"
+                    className="mc-input"
+                    value={logForm.mileage}
+                    onChange={(e) => setLogForm({ ...logForm, mileage: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <button
+                disabled={isSubmittingLog}
+                className="mc-btn-primary w-full py-3 flex items-center justify-center gap-2 bg-purple-500 hover:bg-purple-600 border-purple-600"
+              >
+                {isSubmittingLog ? <span className="animate-spin">⌛</span> : <CheckCircle className="w-4 h-4" />}
+                {isSubmittingLog ? "Submitting..." : "Submit Log"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

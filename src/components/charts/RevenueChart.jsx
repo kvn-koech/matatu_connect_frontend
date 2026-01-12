@@ -11,13 +11,13 @@ const data = [
   { name: 'Sun', revenue: 3490 },
 ];
 
-export default function RevenueChart() {
+export default function RevenueChart({ data }) {
   return (
     <div style={{ width: '100%', height: 300 }}>
       {/* Container is handled by parent usually, but ResponsiveContainer needs explicit height or parent height */}
       <ResponsiveContainer>
         <AreaChart
-          data={data}
+          data={data || []}
           margin={{
             top: 10,
             right: 30,

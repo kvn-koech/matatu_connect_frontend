@@ -1,16 +1,39 @@
-import React, { useState, useMemo } from "react";
+
+import React, { useState, useMemo, useEffect } from "react";
 import LiveMap from "../components/map/LiveMap";
 import { useAuth } from "../context/AuthContext";
 import { useApp } from "../context/AppContext";
 import SeatSelector from "../components/seats/SeatSelector";
-import { LogOut } from "lucide-react";
-import { createBooking } from "../api/bookings";
+import { LogOut, Calendar, MapPin, Armchair, CreditCard } from "lucide-react";
+import { createBooking, fetchBookings } from "../api/bookings";
 
 const CommuterDashboard = () => {
-  const { vehicles, routes, bookingRequests } = useApp();
+  const { vehicles, routes } = useApp();
   const { user, logout } = useAuth(); // Get user and logout function
   const [routeFilter, setRouteFilter] = useState("");
   const [selectedVehicle, setSelectedVehicle] = useState(null);
+
+  // Real Bookings State
+  const [myBookings, setMyBookings] = useState([]);
+  const [loadingBookings, setLoadingBookings] = useState(true);
+
+  useEffect(() => {
+    loadBookings();
+  }, []);
+
+  const loadBookings = async () => {
+    try {
+      const res = await fetchBookings();
+      const data = Array.isArray(res.data) ? res.data : (res.data.data || []);
+      // Sort by date descending
+      const sorted = data.sort((a, b) => new Date(b.booking_date) - new Date(a.booking_date));
+      setMyBookings(sorted);
+    } catch (err) {
+      console.error("Failed to load bookings", err);
+    } finally {
+      setLoadingBookings(false);
+    }
+  };
 
   const filteredVehicles = useMemo(() => {
     return vehicles.filter((v) =>
@@ -95,7 +118,7 @@ const CommuterDashboard = () => {
                   ? "border-primary bg-primary/10"
                   : "border-white/10 bg-surface-dark hover:bg-white/5"
                 }
-            `}
+`}
             >
               <div className="flex items-start justify-between mb-3">
                 <div>
@@ -120,8 +143,8 @@ const CommuterDashboard = () => {
                     </svg>
                     <span className="text-[10px] font-bold text-white">{v.rating || "4.5"}</span>
                   </div>
-                </div>
-              </div>
+                </div >
+              </div >
 
               <div className="flex items-center justify-between mt-4">
                 <div className="text-xs text-text-muted">
@@ -131,13 +154,13 @@ const CommuterDashboard = () => {
                   Select Vehicle →
                 </p>
               </div>
-            </button>
+            </button >
           ))}
-        </div>
-      </div>
+        </div >
+      </div >
 
       {/* ALL ROUTES */}
-      <div className="mb-10">
+      < div className="mb-10" >
         <h3 className="text-xl font-bold text-white mb-4">All Routes</h3>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {routes.map((route) => (
@@ -163,61 +186,109 @@ const CommuterDashboard = () => {
             </div>
           )}
         </div>
-      </div>
+      </div >
 
       {/* SEAT SELECTION */}
-      {selectedVehicle && (
-        <SeatSelector
-          totalSeats={selectedVehicle.passengerCapacity || 14} // Use backend field name if varying
-          bookedSeats={selectedVehicle.bookedSeats || [2, 5, 7]}
-          onConfirm={async (seats) => {
-            try {
-              // Assuming single seat booking for simplicity or iterate if backend requires one by one
-              // Backend 'createBooking' takes: { matatu_id, seat_number }
-              for (const seat of seats) {
-                await createBooking({
-                  matatu_id: selectedVehicle.id,
-                  seat_number: seat
-                });
+      {
+        selectedVehicle && (
+          <SeatSelector
+            totalSeats={selectedVehicle.passengerCapacity || 14}
+            matatuId={selectedVehicle.id}
+            onConfirm={async (seats) => {
+              try {
+                for (const seat of seats) {
+                  await createBooking({
+                    matatu_id: selectedVehicle.id,
+                    seat_number: seat
+                  });
+                }
+                alert(`Successfully booked seat(s) ${seats.join(", ")} on ${selectedVehicle.name}`);
+                setSelectedVehicle(null);
+                loadBookings(); // Refresh bookings list
+              } catch (err) {
+                console.error("Booking failed", err);
+                const msg = err.response?.data?.error || err.response?.data?.message || "Failed to book seat. Please try again.";
+                alert(msg);
               }
-              alert(`Successfully booked seat(s) ${seats.join(", ")} on ${selectedVehicle.name}`);
-              setSelectedVehicle(null); // Close modal
-              // Ideally refresh data here
-            } catch (err) {
-              console.error("Booking failed", err);
-              const msg = err.response?.data?.error || err.response?.data?.message || "Failed to book seat. Please try again.";
-              alert(msg);
-            }
-          }}
-        />
-      )}
+            }}
+          />
+        )
+      }
 
-      {/* BOOKINGS */}
-      {bookingRequests.length > 0 && (
-        <div className="bg-surface-dark p-6 rounded-2xl mt-12">
-          <h3 className="text-lg font-semibold text-white mb-4">
-            Your Bookings
-          </h3>
+      {/* BOOKINGS SECTION */}
+      <div className="bg-surface-dark rounded-2xl p-6 border border-white/5">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-bold text-white">Your Trip History</h3>
+          <button onClick={loadBookings} className="text-sm text-emerald-400 hover:text-emerald-300">
+            Refresh
+          </button>
+        </div>
 
-          <div className="space-y-3">
-            {bookingRequests.map((b) => (
-              <div
-                key={b.id}
-                className="p-4 bg-black/30 rounded-xl border border-white/10"
-              >
-                <p className="text-white font-medium">
-                  {b.vehicleName}
-                </p>
-                <p className="text-text-muted text-sm">
-                  Status: {b.status}
-                </p>
+        {loadingBookings ? (
+          <div className="text-center py-8 text-text-muted">Loading your trips...</div>
+        ) : myBookings.length > 0 ? (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+            {myBookings.map((booking) => (
+              <div key={booking.id} className={`mc-card p-5 group transition-all flex flex-col gap-3 ${booking.status === 'rejected' ? 'border-red-500/30 bg-red-500/5' :
+                  booking.status === 'confirmed' ? 'border-emerald-500/20' :
+                    'hover:border-emerald-500/30'
+                }`}>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-bold text-white text-lg">{booking.matatu?.plate || "Unknown Vehicle"}</h4>
+                    <p className="text-xs text-text-muted">{booking.matatu?.route || "Route Info Unavailable"}</p>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${booking.status === 'confirmed' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
+                      booking.status === 'rejected' ? 'bg-red-500/20 text-red-400 border border-red-500/40 animate-pulse' :
+                        booking.status === 'completed' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                          'bg-yellow-500/20 text-yellow-500 border border-yellow-500/30'
+                    }`}>
+                    {booking.status}
+                  </span>
+                </div>
+
+                {booking.status === 'rejected' && (
+                  <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-sm">
+                    <p className="text-red-400 font-semibold">❌ Booking Rejected by Driver</p>
+                    <p className="text-red-300/70 text-xs mt-1">This seat is now available for other passengers. Please select another vehicle or time slot.</p>
+                  </div>
+                )}
+
+                {booking.status === 'pending' && (
+                  <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-2 text-xs">
+                    <p className="text-yellow-400">⏳ Awaiting driver confirmation...</p>
+                  </div>
+                )}
+
+                <div className="h-px bg-white/5 my-1" />
+
+                <div className="grid grid-cols-2 gap-y-2 text-sm">
+                  <div className="flex items-center gap-2 text-text-muted">
+                    <Calendar size={14} className="text-emerald-500" />
+                    <span>{new Date(booking.booking_date).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-text-muted">
+                    <Armchair size={14} className="text-emerald-500" />
+                    <span>Seat {booking.seat_number}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-text-muted">
+                    <CreditCard size={14} className="text-emerald-500" />
+                    <span>{booking.payment_status === 'completed' ? 'Paid' : 'Unpaid'} ({booking.payment_amount}/=)</span>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="text-center py-12 bg-black/20 rounded-xl border border-dashed border-white/10">
+            <MapPin size={48} className="mx-auto mb-3 text-emerald-500/20" />
+            <p className="text-text-muted">No bookings yet. Select a vehicle above to book your first ride!</p>
+          </div>
+        )}
+      </div>
     </>
   );
 };
 
 export default CommuterDashboard;
+

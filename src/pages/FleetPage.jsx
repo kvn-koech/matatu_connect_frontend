@@ -36,16 +36,22 @@ export default function FleetPage() {
 
             // routes
             const resRoutes = await fetchRoutes();
-            console.log("Routes:", resRoutes);
+            console.log("Routes Response:", resRoutes);
+            console.log("Routes Response.data:", resRoutes.data);
+            console.log("Routes Response.data.data:", resRoutes.data?.data);
             // routes endpoint returns { data: [...] } via success_response
             const routeList = resRoutes.data?.data || resRoutes.data || [];
+            console.log("Parsed Route List:", routeList);
+            console.log("Is Array?:", Array.isArray(routeList));
             setRoutes(Array.isArray(routeList) ? routeList : []);
 
             // drivers
             const resDrivers = await fetchDrivers();
-            console.log("Drivers:", resDrivers);
+            console.log("Drivers Response:", resDrivers);
+            console.log("Drivers Response.data:", resDrivers.data);
             // drivers endpoint returns pure list [...]
             const driverList = Array.isArray(resDrivers.data) ? resDrivers.data : (resDrivers.data?.data || []);
+            console.log("Parsed Driver List:", driverList);
             setAvailableDrivers(Array.isArray(driverList) ? driverList : []);
         } catch (err) {
             console.error("Error loading fleet data", err);
@@ -173,66 +179,125 @@ export default function FleetPage() {
                 </table>
             </div>
 
-            {/* VIEW DETAILS MODAL */}
+            {/* VIEW / EDIT VEHICLE MODAL */}
             {selectedVehicle && (
-                <Modal title={`Vehicle Details: ${selectedVehicle.plate_number}`} onClose={() => setSelectedVehicle(null)}>
-                    <div className="space-y-6">
-                        <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10">
-                            <div>
-                                <p className="text-sm text-text-muted">Status</p>
-                                <span className={`px-2 py-1 rounded-full text-xs font-bold ${selectedVehicle.assignment_status === "active"
-                                    ? "bg-emerald-500/10 text-emerald-400"
-                                    : "bg-yellow-500/10 text-yellow-500"
-                                    }`}>
-                                    {selectedVehicle.assignment_status || "Active"}
-                                </span>
+                <Modal title={isEditing ? `Edit Vehicle: ${selectedVehicle.plate_number}` : `Vehicle Details: ${selectedVehicle.plate_number}`} onClose={() => { setSelectedVehicle(null); setIsEditing(false); }}>
+                    {isEditing ? (
+                        <form onSubmit={handleUpdateVehicle} className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="mc-label">Capacity</label>
+                                    <input
+                                        type="number"
+                                        className="mc-input"
+                                        value={selectedVehicle.capacity}
+                                        onChange={e => setSelectedVehicle({ ...selectedVehicle, capacity: parseInt(e.target.value) })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="mc-label">Route</label>
+                                    <select
+                                        className="mc-input bg-slate-900 appearance-none"
+                                        value={selectedVehicle.route_id || ""}
+                                        onChange={e => setSelectedVehicle({ ...selectedVehicle, route_id: e.target.value })}
+                                    >
+                                        <option value="">-- Unassigned --</option>
+                                        {routes.map(r => (
+                                            <option key={r.id} value={r.id}>{r.name || r.origin + " - " + r.destination}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
-                            <div className="text-right">
-                                <p className="text-sm text-text-muted">Capacity</p>
-                                <p className="text-xl font-bold text-white">{selectedVehicle.capacity} Seats</p>
-                            </div>
-                        </div>
-
-                        <div className="space-y-4">
                             <div>
-                                <h4 className="text-sm font-bold text-white mb-2 uppercase tracking-wider">Assignment Info</h4>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="p-3 bg-surface-dark rounded-lg">
-                                        <p className="text-xs text-text-muted">Driver</p>
-                                        <p className="text-white font-medium">{selectedVehicle.driver || "Unassigned"}</p>
-                                        {selectedVehicle.driver_id && <p className="text-[10px] text-text-muted">ID: {selectedVehicle.driver_id}</p>}
-                                    </div>
-                                    <div className="p-3 bg-surface-dark rounded-lg">
-                                        <p className="text-xs text-text-muted">Route</p>
-                                        <p className="text-white font-medium">{selectedVehicle.route ? (selectedVehicle.route.name || `${selectedVehicle.route.origin}-${selectedVehicle.route.destination}`) : "Unassigned"}</p>
-                                    </div>
+                                <label className="mc-label">Driver</label>
+                                <select
+                                    className="mc-input bg-slate-900 appearance-none"
+                                    value={selectedVehicle.driver_id || ""}
+                                    onChange={e => setSelectedVehicle({ ...selectedVehicle, driver_id: e.target.value })}
+                                >
+                                    <option value="">-- Unassigned --</option>
+                                    {availableDrivers.map(d => (
+                                        <option key={d.id} value={d.id}>{d.name} ({d.email})</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="flex gap-3 mt-4">
+                                <button type="button" onClick={() => setIsEditing(false)} className="flex-1 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors border border-white/10">
+                                    Cancel
+                                </button>
+                                <button disabled={isSubmitting} className="flex-1 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg transition-colors">
+                                    {isSubmitting ? "Saving..." : "Save Changes"}
+                                </button>
+                            </div>
+                        </form>
+                    ) : (
+                        <div className="space-y-6">
+                            <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10">
+                                <div>
+                                    <p className="text-sm text-text-muted">Status</p>
+                                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${selectedVehicle.assignment_status === "active"
+                                        ? "bg-emerald-500/10 text-emerald-400"
+                                        : "bg-yellow-500/10 text-yellow-500"
+                                        }`}>
+                                        {selectedVehicle.assignment_status || "Active"}
+                                    </span>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-sm text-text-muted">Capacity</p>
+                                    <p className="text-xl font-bold text-white">{selectedVehicle.capacity} Seats</p>
                                 </div>
                             </div>
 
-                            <div>
-                                <h4 className="text-sm font-bold text-white mb-2 uppercase tracking-wider">Performance (Mock)</h4>
-                                <div className="p-3 bg-surface-dark rounded-lg flex justify-between items-center">
-                                    <div>
-                                        <p className="text-xs text-text-muted">Daily Revenue</p>
-                                        <p className="text-white font-bold">KES 12,500</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-xs text-text-muted">Fuel Efficiency</p>
-                                        <p className="text-white font-bold">8.2 km/L</p>
+                            <div className="space-y-4">
+                                <div>
+                                    <h4 className="text-sm font-bold text-white mb-2 uppercase tracking-wider">Assignment Info</h4>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="p-3 bg-surface-dark rounded-lg">
+                                            <p className="text-xs text-text-muted">Driver</p>
+                                            <p className="text-white font-medium">{selectedVehicle.driver || "Unassigned"}</p>
+                                            {selectedVehicle.driver_id && <p className="text-[10px] text-text-muted">ID: {selectedVehicle.driver_id}</p>}
+                                        </div>
+                                        <div className="p-3 bg-surface-dark rounded-lg">
+                                            <p className="text-xs text-text-muted">Route</p>
+                                            <p className="text-white font-medium">{selectedVehicle.route ? (selectedVehicle.route.name || `${selectedVehicle.route.origin}-${selectedVehicle.route.destination}`) : "Unassigned"}</p>
+                                        </div>
                                     </div>
                                 </div>
+
+                                {/* Performance Data - Hidden until Real Log Integration */}
+                                {/* 
+                                <div>
+                                    <h4 className="text-sm font-bold text-white mb-2 uppercase tracking-wider">Performance (Mock)</h4>
+                                    <div className="p-3 bg-surface-dark rounded-lg flex justify-between items-center">
+                                        <div>
+                                            <p className="text-xs text-text-muted">Daily Revenue</p>
+                                            <p className="text-white font-bold">KES 12,500</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-text-muted">Fuel Efficiency</p>
+                                            <p className="text-white font-bold">8.2 km/L</p>
+                                        </div>
+                                    </div>
+                                </div> 
+                                */}
+                            </div>
+
+                            <div className="flex gap-3 mt-6">
+                                <button
+                                    onClick={() => setIsEditing(true)}
+                                    className="flex-1 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors border border-white/10"
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={() => handleDeleteVehicle(selectedVehicle.id)}
+                                    className="flex-1 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg transition-colors border border-red-500/20"
+                                >
+                                    Delete
+                                </button>
                             </div>
                         </div>
-
-                        <div className="flex gap-3 mt-6">
-                            <button className="flex-1 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors border border-white/10">
-                                Edit
-                            </button>
-                            <button className="flex-1 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg transition-colors border border-red-500/20">
-                                Delete
-                            </button>
-                        </div>
-                    </div>
+                    )}
                 </Modal>
             )}
 

@@ -98,7 +98,10 @@ export const AppProvider = ({ children }) => {
 
         // 2. Fetch Vehicles
         const vehiclesRes = await fetchMatatus();
-        const apiVehicles = vehiclesRes.data || [];
+        console.log("Vehicles API Response:", vehiclesRes);
+        // Backend returns { status: "success", data: [...] }
+        const apiVehicles = vehiclesRes.data?.data || vehiclesRes.data || [];
+        console.log("Parsed vehicles:", apiVehicles);
 
         // 3. Map Vehicles with Route info
         const mappedVehicles = apiVehicles.map(v => {
@@ -120,6 +123,7 @@ export const AppProvider = ({ children }) => {
             lat: v.latitude || -1.2921,
             lng: v.longitude || 36.8219,
             status: "available",
+            assignment_status: v.assignment_status,
             passengerCapacity: v.capacity,
             rating: 4.5, // Mock rating
             _posIndex: 0
