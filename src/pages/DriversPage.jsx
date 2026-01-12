@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { fetchDrivers, inviteDriver } from "../api/users"; // You'll need to export registerUser from here or import from api/auth
+import { fetchDrivers, inviteDriver, searchDriver, updateDriverStatus } from "../api/users";
 import { registerUser } from "../api/auth";
 import { Plus, Search, User, Mail, Phone, MoreVertical } from "lucide-react";
 
@@ -8,6 +8,7 @@ export default function DriversPage() {
     const [showModal, setShowModal] = useState(false);
     const [activeTab, setActiveTab] = useState("invite"); // 'invite' or 'create'
     const [inviteEmail, setInviteEmail] = useState("");
+    const [foundDriver, setFoundDriver] = useState(null); // Result from search
     const [newDriverForm, setNewDriverForm] = useState({ name: "", email: "", password: "", role: "driver" });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -26,13 +27,39 @@ export default function DriversPage() {
         }
     };
 
-    const handleInvite = async (e) => {
+    const handleStatusUpdate = async (id, action) => {
+        if (!window.confirm(`Are you sure you want to ${action} this driver?`)) return;
+        try {
+            await updateDriverStatus(id, action);
+            alert(`Driver ${action}d successfully`);
+            loadDrivers();
+        } catch (err) {
+            console.error(err);
+            alert("Failed to update status");
+        }
+    };
+
+    const handleSearch = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
+        setFoundDriver(null);
         try {
-            await inviteDriver(inviteEmail);
+            const res = await searchDriver(inviteEmail);
+            setFoundDriver(res.data.data);
+        } catch (err) {
+            alert("Search failed: " + (err.response?.data?.error || "Driver not found"));
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleInvite = async () => {
+        setIsSubmitting(true);
+        try {
+            await inviteDriver(inviteEmail); // or foundDriver.email
             alert("Driver added to Sacco successfully!");
             setInviteEmail("");
+            setFoundDriver(null);
             setShowModal(false);
             loadDrivers();
         } catch (err) {
@@ -87,13 +114,25 @@ export default function DriversPage() {
                             </div>
                             <div>
                                 <h3 className="font-bold text-white text-lg">{driver.name}</h3>
-                                <div className="flex items-center gap-1 text-xs text-text-muted">
-                                    <span className="text-emerald-400">Active</span> • ID: {driver.id}
+                                <div className="flex items-center gap-2 text-xs">
+                                    <span className={`px-2 py-0.5 rounded-full font-bold uppercase ${driver.verification_status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' :
+                                        driver.verification_status === 'rejected' ? 'bg-red-500/20 text-red-400' :
+                                            'bg-yellow-500/20 text-yellow-500 animate-pulse'
+                                        }`}>
+                                        {driver.verification_status || 'Approved'}
+                                    </span>
+                                    <span className="text-text-muted">ID: {driver.id}</span>
                                 </div>
                             </div>
                         </div>
 
                         <div className="space-y-2 mt-2">
+                            {driver.license_number && (
+                                <div className="flex items-center gap-3 text-sm text-text-muted p-2 bg-white/5 rounded-lg border border-dashed border-white/10">
+                                    <span className="text-xs font-bold text-white">LICENCE:</span>
+                                    <span className="truncate font-mono">{driver.license_number}</span>
+                                </div>
+                            )}
                             <div className="flex items-center gap-3 text-sm text-text-muted p-2 bg-white/5 rounded-lg">
                                 <Mail size={16} />
                                 <span className="truncate">{driver.email}</span>
@@ -102,12 +141,45 @@ export default function DriversPage() {
                                 <Phone size={16} />
                                 <span>No phone linked</span>
                             </div>
+
+                            {/* Assigned Matatu Info */}
+                            <div className="p-3 bg-surface-dark rounded-lg mt-2 border border-white/5">
+                                <p className="text-xs font-bold text-text-muted uppercase mb-1">Current Assignment</p>
+                                {driver.assigned_vehicle ? (
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <p className="text-white font-bold">{driver.assigned_vehicle}</p>
+                                            <p className="text-xs text-emerald-400">{driver.assigned_route || "No Route"}</p>
+                                        </div>
+                                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-text-muted italic">No active vehicle assigned</p>
+                                )}
+                            </div>
                         </div>
 
                         <div className="mt-auto pt-4 border-t border-white/5 flex gap-2">
-                            <button className="flex-1 py-2 text-sm font-semibold bg-white/5 hover:bg-white/10 rounded-lg text-white transition-colors">
-                                View Profile
-                            </button>
+                            {driver.verification_status === 'pending' ? (
+                                <>
+                                    <button
+                                        onClick={() => handleStatusUpdate(driver.id, 'approve')}
+                                        className="flex-1 py-2 text-sm font-bold bg-emerald-500 hover:bg-emerald-400 text-black rounded-lg transition-colors"
+                                    >
+                                        Approve
+                                    </button>
+                                    <button
+                                        onClick={() => handleStatusUpdate(driver.id, 'reject')}
+                                        className="flex-1 py-2 text-sm font-bold bg-white/5 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors"
+                                    >
+                                        Reject
+                                    </button>
+                                </>
+                            ) : (
+                                <button className="flex-1 py-2 text-sm font-semibold bg-white/5 hover:bg-white/10 rounded-lg text-white transition-colors">
+                                    View Profile
+                                </button>
+                            )}
                         </div>
                     </div>
                 ))}
@@ -150,25 +222,81 @@ export default function DriversPage() {
                         {/* Content */}
                         <div className="p-6">
                             {activeTab === 'invite' ? (
-                                <form onSubmit={handleInvite} className="space-y-4">
+                                <div className="space-y-4">
                                     <p className="text-sm text-text-muted">
-                                        Enter the email of an existing driver on Matatu Connect to add them to your Sacco.
+                                        Enter the email of an existing driver to verify their details before adding them.
                                     </p>
-                                    <div>
-                                        <label className="mc-label">Driver Email</label>
-                                        <input
-                                            type="email"
-                                            required
-                                            className="mc-input"
-                                            placeholder="driver@example.com"
-                                            value={inviteEmail}
-                                            onChange={e => setInviteEmail(e.target.value)}
-                                        />
-                                    </div>
-                                    <button disabled={isSubmitting} className="mc-btn-primary w-full py-3">
-                                        {isSubmitting ? "Inviting..." : "Add to Sacco"}
-                                    </button>
-                                </form>
+
+                                    {!foundDriver ? (
+                                        <form onSubmit={handleSearch} className="space-y-4">
+                                            <div>
+                                                <label className="mc-label">Driver Email</label>
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        type="email"
+                                                        required
+                                                        className="mc-input flex-1"
+                                                        placeholder="driver@example.com"
+                                                        value={inviteEmail}
+                                                        onChange={e => setInviteEmail(e.target.value)}
+                                                    />
+                                                    <button disabled={isSubmitting} className="px-4 bg-white/10 hover:bg-white/20 text-white rounded-lg font-bold transition-colors">
+                                                        {isSubmitting ? "..." : <Search size={20} />}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <button disabled={isSubmitting} className="mc-btn-primary w-full py-3">
+                                                {isSubmitting ? "Searching..." : "Verify Driver"}
+                                            </button>
+                                        </form>
+                                    ) : (
+                                        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
+                                            <div className="p-4 bg-surface-dark border border-white/10 rounded-xl space-y-3">
+                                                <div className="flex items-center gap-3 border-b border-white/5 pb-3">
+                                                    <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                                                        {foundDriver.name.charAt(0)}
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="text-white font-bold">{foundDriver.name}</h4>
+                                                        <p className="text-sm text-text-muted">{foundDriver.email}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2 text-sm">
+                                                    <div>
+                                                        <p className="text-text-muted text-xs uppercase">License Info</p>
+                                                        <p className="text-white font-mono">{foundDriver.license_number || "N/A"}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-text-muted text-xs uppercase">Verification</p>
+                                                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${foundDriver.verification_status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-yellow-500/20 text-yellow-500'}`}>
+                                                            {foundDriver.verification_status || "Pending"}
+                                                        </span>
+                                                    </div>
+                                                    <div className="col-span-2">
+                                                        <p className="text-text-muted text-xs uppercase">Current Sacco</p>
+                                                        <p className="text-white">{foundDriver.sacco_id ? `Assigned (ID: ${foundDriver.sacco_id})` : "Unassigned - Ready to join"}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex gap-3">
+                                                <button
+                                                    onClick={() => setFoundDriver(null)}
+                                                    className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-lg"
+                                                >
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    onClick={handleInvite}
+                                                    disabled={isSubmitting}
+                                                    className="flex-1 py-3 mc-btn-primary"
+                                                >
+                                                    {isSubmitting ? "Adding..." : "Add to Sacco"}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             ) : (
                                 <form onSubmit={handleCreate} className="space-y-4">
                                     <div>
@@ -211,7 +339,8 @@ export default function DriversPage() {
                         </div>
                     </div>
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 }

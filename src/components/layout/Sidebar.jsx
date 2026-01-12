@@ -61,6 +61,9 @@ const Sidebar = ({ role }) => {
             <Link to="/manager/routes" className={linkClass("/manager/routes")}>
               <Route size={18} /> Routes
             </Link>
+            <Link to="/manager/reviews" className={linkClass("/manager/reviews")}>
+              <Users size={18} /> Customer Reviews
+            </Link>
           </>
         )}
       </nav>

@@ -11,6 +11,7 @@ import {
 import { fetchMatatus } from "../api/matatus";
 import { fetchRoutes } from "../api/routes";
 import { fetchDrivers } from "../api/users";
+import { fetchSaccoStats } from "../api/dashboard";
 import RevenueChart from "../components/charts/RevenueChart";
 
 export default function SaccoManagementDashboard() {
@@ -19,6 +20,7 @@ export default function SaccoManagementDashboard() {
   // Data States
   const [availableDrivers, setAvailableDrivers] = useState([]);
   const [mapVehicles, setMapVehicles] = useState([]);
+  const [saccoStats, setSaccoStats] = useState({ total_revenue: 0 });
 
   // Fetch Data
   const loadData = async () => {
@@ -46,6 +48,10 @@ export default function SaccoManagementDashboard() {
 
       setMapVehicles(mappedVehicles);
 
+      // Fetch Sacco Stats
+      const resStats = await fetchSaccoStats();
+      setSaccoStats(resStats.data.data || { total_revenue: 0 });
+
     } catch (err) {
       console.error("Failed to load dashboard data", err);
     }
@@ -72,10 +78,10 @@ export default function SaccoManagementDashboard() {
 
       {/* STATS GRID */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Total Revenue" value="KES 4.2M" subtext="Vs. KES 3.75M last month" trend="+12%" trendUp={true} />
-        <StatCard label="Active Fleet" value="45/50" subtext="5 vehicles in maintenance" trend="+2%" trendUp={true} />
-        <StatCard label="Daily Passengers" value="12.4K" subtext="Due to heavy rains" trend="-5%" trendUp={false} />
-        <StatCard label="Fuel Efficiency" value="8.5 km/L" subtext="Fleet average" badge="Stable" />
+        <StatCard label="Total Revenue" value={`KES ${saccoStats.total_revenue?.toLocaleString() || '0'}`} subtext="Total earnings" trend="+12%" trendUp={true} />
+        <StatCard label="Active Fleet" value={saccoStats.active_fleet || "0/0"} subtext="Vehicles on road" trend="+2%" trendUp={true} />
+        <StatCard label="Daily Passengers" value={saccoStats.daily_passengers?.toLocaleString() || "0"} subtext="Today's total" trend="-5%" trendUp={false} />
+        <StatCard label="Fuel Efficiency" value={saccoStats.fuel_efficiency || "0.0 km/L"} subtext="Fleet average" badge="Stable" />
       </div>
 
       {/* CHARTS SECTION */}
@@ -91,7 +97,7 @@ export default function SaccoManagementDashboard() {
               +12.5%
             </div>
           </div>
-          <RevenueChart />
+          <RevenueChart data={saccoStats.revenue_trend} />
         </div>
 
         <div className="mc-card p-6">

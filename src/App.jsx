@@ -16,6 +16,7 @@ import NotFound from "./pages/NotFound.jsx";
 import FleetPage from "./pages/FleetPage.jsx";
 import DriversPage from "./pages/DriversPage.jsx";
 import ManageRoutesPage from "./pages/ManageRoutesPage.jsx";
+import ReviewsPage from "./pages/ReviewsPage.jsx";
 // Layouts
 import MainLayout from "./components/layout/MainLayout.jsx";
 import PublicLayout from "./components/layout/PublicLayout.jsx";
@@ -163,6 +164,18 @@ function AppRoutes() {
           isAuthenticated ? (
             <MainLayout role="manager">
               <ManageRoutesPage />
+            </MainLayout>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/manager/reviews"
+        element={
+          isAuthenticated ? (
+            <MainLayout role="manager">
+              <ReviewsPage />
             </MainLayout>
           ) : (
             <Navigate to="/login" replace />
