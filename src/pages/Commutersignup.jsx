@@ -141,6 +141,18 @@ export default function CommuterSignup() {
             </div>
 
             <div>
+              <label className="mc-label">Phone Number</label>
+              <input
+                type="tel"
+                name="phone_number"
+                value={formData.phone_number}
+                onChange={handleChange}
+                placeholder="0712345678"
+                className="mc-input"
+              />
+            </div>
+
+            <div>
               <label className="mc-label">Password</label>
               <input
                 type="password"
