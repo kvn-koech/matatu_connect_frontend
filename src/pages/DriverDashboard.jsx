@@ -246,7 +246,9 @@ const DriverDashboard = () => {
       setPaymentForm({ phone: "", amount: "" });
     } catch (err) {
       console.error("Payment Error", err);
-      alert("Failed to send payment request: " + (err.response?.data?.error || err.message));
+      // DEBUG: Show timeout config in alert
+      const currentTimeout = err.config?.timeout;
+      alert(`Failed: ${err.message} (Timeout Config: ${currentTimeout})`);
     } finally {
       setIsSendingPayment(false);
     }
