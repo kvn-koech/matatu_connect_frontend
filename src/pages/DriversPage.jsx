@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { fetchDrivers, inviteDriver, searchDriver, updateDriverStatus, assignRoute } from "../api/users";
 import { fetchRoutes } from "../api/routes";
 import { registerUser } from "../api/auth";
+import { useAuth } from "../context/AuthContext";
 import { Plus, Search, User, Mail, Phone, MoreVertical } from "lucide-react";
 
 export default function DriversPage() {
+    const { user } = useAuth();
     const [drivers, setDrivers] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [activeTab, setActiveTab] = useState("invite"); // 'invite' or 'create'
@@ -89,7 +91,12 @@ export default function DriversPage() {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            await registerUser({ ...newDriverForm, role: "driver" });
+            await registerUser({
+                ...newDriverForm,
+                role: "driver",
+                sacco_id: user?.sacco_id, // Link to Manager's Sacco
+                verification_status: "approved" // Auto-approve since Manager created it
+            });
             alert("New Driver Created Successfully!");
             setNewDriverForm({ name: "", email: "", password: "", role: "driver" });
             setShowModal(false);
