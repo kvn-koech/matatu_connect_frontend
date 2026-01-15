@@ -541,7 +541,7 @@ const DriverDashboard = () => {
                         onClick={() => openPaymentModal(booking)}
                         className="w-full py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors border border-blue-500/20"
                       >
-                        <CreditCard className="w-4 h-4" /> Request M-Pesa Payment
+                        <CreditCard className="w-4 h-4" /> Request Payment (Secure)
                       </button>
                     )}
                   </div>
