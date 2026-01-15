@@ -11,6 +11,7 @@ export default function CommuterSignup() {
     firstname: "",
     secondname: "",
     email: "",
+    phone_number: "", // Add default
     password: "",
   });
 
@@ -21,7 +22,7 @@ export default function CommuterSignup() {
     e.preventDefault();
     setError("");
 
-    if (!formData.firstname || !formData.email || !formData.password) {
+    if (!formData.firstname || !formData.email || !formData.password || !formData.phone_number) {
       setError("Please fill in all required fields");
       return;
     }
@@ -32,6 +33,7 @@ export default function CommuterSignup() {
       const payload = {
         name: `${formData.firstname} ${formData.secondname}`.trim(),
         email: formData.email,
+        phone_number: formData.phone_number,
         password: formData.password,
         role: "commuter"
       };
@@ -134,6 +136,18 @@ export default function CommuterSignup() {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="••••••••"
+                className="mc-input"
+              />
+            </div>
+
+            <div>
+              <label className="mc-label">Phone Number</label>
+              <input
+                type="tel"
+                name="phone_number"
+                value={formData.phone_number}
+                onChange={handleChange}
+                placeholder="2547XXXXXXXX"
                 className="mc-input"
               />
             </div>
