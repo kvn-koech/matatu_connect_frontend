@@ -10,7 +10,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     // Connect to the backend
-    const newSocket = io('http://localhost:5000', {
+    const newSocket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
       transports: ['websocket'], // Force websocket to avoid polling issues
       withCredentials: true,
     });
