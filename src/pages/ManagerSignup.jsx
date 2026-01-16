@@ -56,7 +56,10 @@ export default function ManagerSignup() {
       await signup(payload);
       navigate("/dashboard-overview");
     } catch (err) {
-      setError("Failed to create account. Please try again.");
+      console.error("Signup Error", err);
+      // Extract specific error message
+      const msg = err.response?.data?.error || err.message || "Failed to create account.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
