@@ -250,9 +250,7 @@ const DriverDashboard = () => {
       setPaymentForm({ phone: "", amount: "" });
     } catch (err) {
       console.error("Payment Error", err);
-      // User-friendly error
-      const errorMessage = err.response?.data?.error || "Payment request failed. Please try again.";
-      alert(errorMessage);
+      alert("Payment request failed. Please check the phone number and network, then try again.");
     } finally {
       setIsSendingPayment(false);
     }
