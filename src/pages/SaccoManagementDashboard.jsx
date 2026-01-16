@@ -13,6 +13,7 @@ import { fetchMatatus } from "../api/matatus";
 import { fetchRoutes } from "../api/routes";
 import { fetchDrivers } from "../api/users";
 import { fetchSaccoStats } from "../api/dashboard";
+import { fetchLogs } from "../api/logs"; // Import log API
 import RevenueChart from "../components/charts/RevenueChart";
 
 export default function SaccoManagementDashboard() {
@@ -22,10 +23,17 @@ export default function SaccoManagementDashboard() {
   const [availableDrivers, setAvailableDrivers] = useState([]);
   const [mapVehicles, setMapVehicles] = useState([]);
   const [saccoStats, setSaccoStats] = useState({ total_revenue: 0 });
+  const [recentLogs, setRecentLogs] = useState([]); // New State for Logs
 
   // Fetch Data
   const loadData = async () => {
     try {
+      // Fetch Logs
+      fetchLogs().then(res => {
+        const logs = Array.isArray(res.data) ? res.data : (res.data.data || []);
+        setRecentLogs(logs);
+      }).catch(err => console.error("Logs fetch failed", err));
+
       // Fetch Drivers for quick view
       const resDrivers = await fetchDrivers();
       const driverData = Array.isArray(resDrivers.data) ? resDrivers.data : (resDrivers.data.data || []);
