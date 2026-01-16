@@ -62,6 +62,8 @@ export default function SaccoManagementDashboard() {
 
       // Fetch Sacco Stats
       const resStats = await fetchSaccoStats();
+      console.log("Stats Response:", resStats);
+      console.log("Stats Data:", resStats.data);
       setSaccoStats(resStats.data.data || { total_revenue: 0 });
 
     } catch (err) {
@@ -174,7 +176,7 @@ export default function SaccoManagementDashboard() {
         />
         <StatCard
           label="Active Fleet"
-          value={saccoStats.active_fleet || "0/0"}
+          value={saccoStats.active_fleet || "0 Drivers"}
           subtext="Vehicles on road"
           trend="+0%"
           trendUp={true}
