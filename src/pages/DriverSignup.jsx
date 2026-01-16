@@ -19,6 +19,16 @@ export default function DriverSignup() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [saccos, setSaccos] = useState([]);
+
+  useState(() => {
+    fetch("/api/saccos")
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") setSaccos(data.data);
+      })
+      .catch(err => console.error("Error fetching Saccos:", err));
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,7 +49,8 @@ export default function DriverSignup() {
         password: formData.password,
         licence: formData.licence,
         plate: formData.plate,
-        role: "driver"
+        role: "driver",
+        sacco_id: formData.sacco_id // Link to Sacco
       };
       await signup(payload);
       navigate("/driver-dashboard");
