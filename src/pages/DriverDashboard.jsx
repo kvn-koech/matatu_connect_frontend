@@ -459,21 +459,17 @@ const DriverDashboard = () => {
           )}
 
           {/* Online Toggle */}
+          {/* Online Toggle */}
           <div className={`
-            flex items-center gap-3 px-4 py-2 rounded-full border transition-all cursor-pointer
+            flex items-center gap-2 px-4 py-2 rounded-full border transition-all cursor-pointer select-none
             ${online ? "bg-emerald-500/10 border-emerald-500/50" : "bg-surface border-white/10"}
           `} onClick={() => setOnline(!online)}>
-            <div className={`w-10 h-6 rounded-full relative transition-colors ${online ? "bg-emerald-500" : "bg-slate-600"}`}>
-              <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${online ? "translate-x-4" : ""}`} />
+            <div className={`w-8 h-4 rounded-full relative transition-colors ${online ? "bg-emerald-500" : "bg-slate-600"}`}>
+              <div className={`absolute top-0.5 left-0.5 w-3 h-3 rounded-full bg-white transition-transform ${online ? "translate-x-4" : ""}`} />
             </div>
-            <div className="text-sm">
-              <p className={`font-bold ${online ? "text-emerald-400" : "text-slate-400"}`}>
-                {online ? "You are Online" : "You are Offline"}
-              </p>
-              <p className="text-[10px] text-text-muted">
-                {online ? "Searching for trips..." : "Not visible to passengers"}
-              </p>
-            </div>
+            <p className={`font-bold text-sm ${online ? "text-emerald-400" : "text-slate-400"}`}>
+              {online ? "Online" : "Offline"}
+            </p>
           </div>
 
           <div className="flex items-center gap-3">
