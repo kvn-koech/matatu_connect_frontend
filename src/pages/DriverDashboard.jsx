@@ -277,6 +277,53 @@ const DriverDashboard = () => {
     }
   };
 
+  // UNASSIGNED DRIVER (No Sacco)
+  if (!user?.sacco_id) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-6">
+        <div className="mc-card w-full max-w-lg p-8 text-center animate-in zoom-in duration-300 border-red-500/20">
+          <div className="w-16 h-16 bg-red-500/10 text-red-400 rounded-full flex items-center justify-center mx-auto mb-6">
+            <XCircle className="w-8 h-8" />
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">Account Not Active</h2>
+          <p className="text-text-muted mb-6">
+            You are not currently assigned to any Sacco. <br />
+            Please contact your Sacco Manager to verify your account and add you to the fleet.
+          </p>
+          <button onClick={logout} className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-bold transition-colors">
+            Logout
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // NO VEHICLE ASSIGNED
+  if (!myVehicle) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-6">
+        <div className="mc-card w-full max-w-lg p-8 text-center animate-in zoom-in duration-300 border-yellow-500/20">
+          <div className="w-16 h-16 bg-yellow-500/10 text-yellow-400 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Users className="w-8 h-8" />
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">Waiting for Assignment</h2>
+          <p className="text-text-muted mb-6">
+            You are signed in, but not yet assigned to a vehicle. <br />
+            Wait for your Sacco Manager to assign a Matatu to you.
+          </p>
+          <div className="flex gap-4 justify-center">
+            <button onClick={() => window.location.reload()} className="px-6 py-2 bg-emerald-500 hover:bg-emerald-400 text-black rounded-lg font-bold transition-colors">
+              Refresh Status
+            </button>
+            <button onClick={logout} className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg font-bold transition-colors">
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // PENDING ASSIGNMENT MODAL
   if (myVehicle && myVehicle.assignment_status === "pending") {
     // ... (Modal Content - Unchanged)
