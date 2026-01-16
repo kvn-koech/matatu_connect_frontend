@@ -113,6 +113,7 @@ export const AppProvider = ({ children }) => {
             name: v.plate_number,
             driverName: v.driver,
             driverId: v.driver_id,
+            driverPhone: v.driver_phone,
             // Map route name from matched route, or use fallback
             routeName: matchedRoute ? matchedRoute.name : (v.route_id ? `Route ${v.route_id}` : "Unassigned"),
             route: matchedRoute ? [
