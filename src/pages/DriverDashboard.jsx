@@ -290,7 +290,7 @@ const DriverDashboard = () => {
           <p className="text-text-muted mb-6">
             You have been assigned to drive <strong className="text-white">{myVehicle.plate_number}</strong>.
             <br />
-            Capacity: {myVehicle.capacity} Passengers.
+            Capacity: {myVehicle.capacity || 14} Passengers.
           </p>
 
           <div className="grid grid-cols-2 gap-4">
