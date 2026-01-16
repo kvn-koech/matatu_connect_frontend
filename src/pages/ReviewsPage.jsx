@@ -72,7 +72,7 @@ export default function ReviewsPage() {
               </div>
 
               <div className="mt-auto pt-4 border-t border-white/5 flex justify-between text-xs text-text-muted">
-                <span>Vehicle ID: {review.matatu_id}</span>
+                <span>Vehicle: {review.matatu_plate || review.matatu_id}</span>
               </div>
 
               {/* Manager Reply Section */}
