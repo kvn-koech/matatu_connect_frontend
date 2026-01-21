@@ -79,34 +79,26 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="mc-page flex items-center justify-center p-4">
-      {/* Background */}
+    <div className="mc-page flex items-center justify-center p-6">
       <div className="mc-bg" />
       <div className="mc-grid" />
       <div className="mc-blob-a" />
+      <div className="mc-blob-b" />
       <div className="mc-blob-c" />
 
-      <div className="mc-shell flex items-center justify-center min-h-screen py-10">
-        <div className="mc-card mc-card-pad w-full max-w-[420px]">
+      <div className="relative z-10 w-full max-w-[440px]">
+        <div className="mc-card mc-card-pad shadow-2xl animate-fadeIn">
           {/* Brand */}
-          <div className="flex items-center gap-3 mb-8 justify-center">
-            <img src={matatuIcon} alt="Matatu Connect" className="w-10 h-10" />
-            <div>
-              <h1 className="text-xl font-semibold tracking-tight">Matatu Connect</h1>
-              <p className="mc-muted text-xs tracking-wider uppercase">Welcome back</p>
+          <div className="flex flex-col items-center mb-8">
+            <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mb-4 shadow-glass ring-1 ring-white/10">
+              <img src={matatuIcon} alt="Matatu Connect" className="w-10 h-10 object-contain drop-shadow-md" />
             </div>
+            <h1 className="text-2xl font-bold tracking-tight text-white mb-1">Matatu Connect</h1>
+            <p className="mc-muted text-sm tracking-wide">Welcome back</p>
           </div>
 
-          {/* Heading */}
-          <div className="text-center mb-8">
-            <h2 className="mc-h2 mb-2">Log in to your account</h2>
-            <p className="mc-muted text-sm">
-              Enter your credentials to access your dashboard
-            </p>
-          </div>
-
-          {/* Role switcher (Optional visual cue) */}
-          <div className="flex bg-slate-900/50 p-1 rounded-xl mb-6">
+          {/* Role switcher */}
+          <div className="flex bg-slate-900/60 p-1.5 rounded-xl mb-8 ring-1 ring-white/5">
             {[
               { id: "commuter", label: "Commuter" },
               { id: "driver", label: "Driver" },
@@ -116,9 +108,9 @@ export default function LoginPage() {
                 key={r.id}
                 type="button"
                 onClick={() => setRole(r.id)}
-                className={`flex-1 text-xs font-medium py-2 rounded-lg transition-all ${role === r.id
-                  ? "bg-emerald-500 text-slate-900 shadow-md"
-                  : "text-slate-400 hover:text-slate-200"
+                className={`flex-1 text-xs font-bold py-2.5 rounded-lg transition-all duration-200 ${role === r.id
+                  ? "bg-white/10 text-white shadow-md ring-1 ring-white/10"
+                  : "text-slate-500 hover:text-slate-300 hover:bg-white/5"
                   }`}
               >
                 {r.label}
@@ -127,10 +119,10 @@ export default function LoginPage() {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="mc-label">Email or Username</label>
-              <div className="relative">
+              <div className="relative group">
                 <input
                   type="text"
                   name="loginIdentifier"
@@ -138,82 +130,35 @@ export default function LoginPage() {
                   autoComplete="username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="mc-input pr-10"
+                  className="mc-input pr-10 focus:ring-emerald-500/30 transition-all"
                   placeholder="name@example.com"
                 />
-                {username && (
-                  <button
-                    type="button"
-                    onClick={() => setUsername("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition"
-                    title="Clear"
-                  >
-                    {/* X Icon SVG */}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M18 6 6 18" />
-                      <path d="m6 6 12 12" />
-                    </svg>
-                  </button>
-                )}
               </div>
             </div>
 
             <div>
-              <div className="flex justify-between items-center mb-1">
+              <div className="flex justify-between items-center mb-1.5">
                 <label className="mc-label mb-0">Password</label>
                 <Link
                   to="/forgot-password"
-                  className="text-[11px] text-emerald-400 hover:underline"
+                  className="text-xs text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
                 >
                   Forgot password?
                 </Link>
               </div>
-              <div className="relative">
+              <div className="relative group">
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="mc-input pr-10"
+                  className="mc-input pr-10 focus:ring-emerald-500/30 transition-all font-mono tracking-widest text-sm"
                   placeholder="••••••••"
                 />
-                {password && (
-                  <button
-                    type="button"
-                    onClick={() => setPassword("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition"
-                    title="Clear"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M18 6 6 18" />
-                      <path d="m6 6 12 12" />
-                    </svg>
-                  </button>
-                )}
               </div>
             </div>
 
             {error && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-red-400 text-sm text-center">
+              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-3 text-red-400 text-xs font-bold text-center animate-shake">
                 {error}
               </div>
             )}
@@ -221,23 +166,30 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="mc-btn-primary w-full shadow-lg shadow-emerald-900/20"
+              className="mc-btn-primary w-full py-3.5 text-sm uppercase tracking-wide shadow-emerald-500/20"
             >
-              {loading ? "Logging in..." : "Log In"}
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                  Logging in...
+                </span>
+              ) : (
+                "Log In"
+              )}
             </button>
           </form>
 
           {/* Divider */}
-          <div className="flex items-center gap-4 my-6">
-            <div className="h-px flex-1 bg-white/5" />
-            <span className="text-[10px] uppercase font-bold text-slate-500">Or continue with</span>
-            <div className="h-px flex-1 bg-white/5" />
+          <div className="flex items-center gap-4 my-8">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            <span className="text-[10px] uppercase font-bold text-slate-600">Or continue with</span>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
           </div>
 
           {/* Google login */}
-          <button className="mc-btn-secondary w-full text-sm">
+          <button className="mc-btn-secondary w-full text-xs py-3 hover:bg-white/10 transition-colors">
             <img src={googleIcon} alt="Google" className="w-4 h-4" />
-            <span>Google</span>
+            <span>Sign in with Google</span>
           </button>
 
           {/* Signup */}
@@ -245,12 +197,16 @@ export default function LoginPage() {
             Don’t have an account?{" "}
             <Link
               to="/commuter-signup"
-              className="text-emerald-400 font-medium hover:underline ml-1"
+              className="text-emerald-400 font-bold hover:text-emerald-300 hover:underline transition-all ml-1"
             >
               Sign up
             </Link>
           </p>
         </div>
+
+        <p className="text-center text-slate-600 text-xs mt-8">
+          &copy; 2026 Matatu Connect. Secure Access.
+        </p>
       </div>
     </div>
   );

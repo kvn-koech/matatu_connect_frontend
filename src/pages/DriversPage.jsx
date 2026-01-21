@@ -125,15 +125,15 @@ export default function DriversPage() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto space-y-6">
+        <div className="mc-shell space-y-6 animate-fadeIn">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-3xl font-bold text-white">Drivers</h1>
-                    <p className="text-text-muted">Manage your fleet drivers ({drivers.length})</p>
+                    <h1 className="mc-h1">Drivers</h1>
+                    <p className="mc-muted">Manage your fleet drivers ({drivers.length})</p>
                 </div>
                 <button
                     onClick={() => setShowModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-black font-bold rounded-xl hover:bg-emerald-400 transition-colors"
+                    className="mc-btn-primary flex items-center gap-2"
                 >
                     <Plus size={20} /> Add Driver
                 </button>
@@ -142,58 +142,58 @@ export default function DriversPage() {
             {/* Drivers Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {drivers.map((driver) => (
-                    <div key={driver.id} className="mc-card p-6 flex flex-col gap-4 relative group">
+                    <div key={driver.id} className="mc-card p-6 flex flex-col gap-4 relative group hover:-translate-y-1 transition-transform duration-300">
                         <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button className="p-1 hover:bg-white/10 rounded"><MoreVertical size={16} className="text-text-muted" /></button>
+                            <button className="p-1 hover:bg-white/10 rounded"><MoreVertical size={16} className="text-slate-400 hover:text-white" /></button>
                         </div>
 
                         <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 rounded-full bg-surface border border-white/10 flex items-center justify-center text-xl font-bold text-emerald-400">
+                            <div className="w-14 h-14 rounded-full bg-surface border border-white/10 flex items-center justify-center text-xl font-bold text-emerald-400 shadow-glow">
                                 {driver.name.charAt(0)}
                             </div>
                             <div>
                                 <h3 className="font-bold text-white text-lg">{driver.name}</h3>
                                 <div className="flex items-center gap-2 text-xs">
-                                    <span className={`px-2 py-0.5 rounded-full font-bold uppercase ${driver.verification_status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' :
-                                        driver.verification_status === 'rejected' ? 'bg-red-500/20 text-red-400' :
-                                            'bg-yellow-500/20 text-yellow-500 animate-pulse'
+                                    <span className={`mc-badge ${driver.verification_status === 'approved' ? 'mc-badge-success' :
+                                        driver.verification_status === 'rejected' ? 'mc-badge-danger' :
+                                            'mc-badge-warning animate-pulse'
                                         }`}>
                                         {driver.verification_status || 'Approved'}
                                     </span>
-                                    <span className="text-text-muted">ID: {driver.id}</span>
+                                    <span className="text-slate-500 font-mono">ID: {driver.id}</span>
                                 </div>
                             </div>
                         </div>
 
                         <div className="space-y-2 mt-2">
                             {driver.license_number && (
-                                <div className="flex items-center gap-3 text-sm text-text-muted p-2 bg-white/5 rounded-lg border border-dashed border-white/10">
-                                    <span className="text-xs font-bold text-white">LICENCE:</span>
-                                    <span className="truncate font-mono">{driver.license_number}</span>
+                                <div className="flex items-center gap-3 text-sm text-slate-400 p-2 bg-white/5 rounded-lg border border-dashed border-white/10">
+                                    <span className="text-[10px] font-bold text-white uppercase tracking-wider">LICENCE</span>
+                                    <span className="truncate font-mono text-emerald-400">{driver.license_number}</span>
                                 </div>
                             )}
-                            <div className="flex items-center gap-3 text-sm text-text-muted p-2 bg-white/5 rounded-lg">
-                                <Mail size={16} />
+                            <div className="flex items-center gap-3 text-sm text-slate-400 p-2 bg-white/5 rounded-lg border border-transparent hover:border-white/5 transition-colors">
+                                <Mail size={16} className="text-slate-500" />
                                 <span className="truncate">{driver.email}</span>
                             </div>
-                            <div className="flex items-center gap-3 text-sm text-text-muted p-2 bg-white/5 rounded-lg">
-                                <Phone size={16} />
+                            <div className="flex items-center gap-3 text-sm text-slate-400 p-2 bg-white/5 rounded-lg border border-transparent hover:border-white/5 transition-colors">
+                                <Phone size={16} className="text-slate-500" />
                                 <span>{driver.phone_number || "No phone linked"}</span>
                             </div>
 
                             {/* Assigned Matatu Info */}
-                            <div className="p-3 bg-surface-dark rounded-lg mt-2 border border-white/5">
-                                <p className="text-xs font-bold text-text-muted uppercase mb-1">Current Assignment</p>
+                            <div className="p-3 bg-slate-900/50 rounded-lg mt-2 border border-white/5">
+                                <p className="mc-label mb-2">Current Assignment</p>
                                 {driver.assigned_vehicle ? (
                                     <div className="flex justify-between items-center">
                                         <div>
-                                            <p className="text-white font-bold">{driver.assigned_vehicle}</p>
-                                            <p className="text-xs text-emerald-400">{driver.assigned_route || "No Route"}</p>
+                                            <p className="text-white font-bold font-mono text-sm bg-white/10 px-2 py-0.5 rounded inline-block mb-1">{driver.assigned_vehicle}</p>
+                                            <p className="text-xs text-emerald-400 font-medium">{driver.assigned_route || "No Route"}</p>
                                         </div>
-                                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981]"></div>
                                     </div>
                                 ) : (
-                                    <p className="text-sm text-text-muted italic">No active vehicle assigned</p>
+                                    <p className="text-xs text-slate-500 italic">No active vehicle assigned</p>
                                 )}
                             </div>
                         </div>
@@ -203,13 +203,13 @@ export default function DriversPage() {
                                 <>
                                     <button
                                         onClick={() => handleStatusUpdate(driver.id, 'approve')}
-                                        className="flex-1 py-2 text-sm font-bold bg-emerald-500 hover:bg-emerald-400 text-black rounded-lg transition-colors"
+                                        className="flex-1 py-2 text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-black rounded-lg transition-colors shadow-lg shadow-emerald-500/20"
                                     >
                                         Approve
                                     </button>
                                     <button
                                         onClick={() => handleStatusUpdate(driver.id, 'reject')}
-                                        className="flex-1 py-2 text-sm font-bold bg-white/5 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors"
+                                        className="flex-1 py-2 text-xs font-bold bg-white/5 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors"
                                     >
                                         Reject
                                     </button>
@@ -218,12 +218,13 @@ export default function DriversPage() {
                                 <div className="flex gap-2 w-full">
                                     <button
                                         onClick={() => setViewDriver(driver)}
-                                        className="flex-1 py-2 text-sm font-semibold bg-white/5 hover:bg-white/10 rounded-lg text-white transition-colors">
+                                        className="mc-btn-secondary flex-1 py-2 text-xs"
+                                    >
                                         View Profile
                                     </button>
                                     <button
                                         onClick={() => handleStatusUpdate(driver.id, 'dismiss')}
-                                        className="py-2 px-3 text-sm font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors border border-red-500/10"
+                                        className="py-2 px-3 text-xs font-bold bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors border border-red-500/10"
                                         title="Dismiss Driver from Sacco"
                                     >
                                         Dismiss
@@ -235,35 +236,38 @@ export default function DriversPage() {
                 ))}
 
                 {drivers.length === 0 && (
-                    <div className="col-span-full py-12 text-center text-text-muted bg-white/5 rounded-2xl border border-dashed border-white/10">
-                        <User size={48} className="mx-auto mb-4 opacity-20" />
-                        <p>No drivers found in your Sacco.</p>
-                        <button onClick={() => setShowModal(true)} className="text-emerald-400 hover:underline mt-2">Add your first driver</button>
+                    <div className="col-span-full py-16 text-center bg-white/5 rounded-3xl border border-dashed border-white/10 flex flex-col items-center justify-center">
+                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+                            <User size={32} className="text-slate-500" />
+                        </div>
+                        <p className="text-slate-400 font-medium mb-1">No drivers found in your Sacco.</p>
+                        <p className="text-sm text-slate-600 mb-6">Get started by inviting or creating a driver account.</p>
+                        <button onClick={() => setShowModal(true)} className="mc-link">Add first driver</button>
                     </div>
                 )}
             </div>
 
             {/* ADD DRIVER MODAL */}
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-                    <div className="mc-card w-full max-w-md overflow-hidden animate-in zoom-in duration-200">
+                <div className="mc-modal-backdrop">
+                    <div className="mc-modal-content">
                         {/* Header */}
-                        <div className="p-6 border-b border-white/10 flex justify-between items-center">
+                        <div className="mc-modal-header">
                             <h2 className="text-xl font-bold text-white">Add Driver</h2>
-                            <button onClick={() => setShowModal(false)} className="text-text-muted hover:text-white">✕</button>
+                            <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-white transition-colors">✕</button>
                         </div>
 
                         {/* Tabs */}
                         <div className="flex border-b border-white/10">
                             <button
                                 onClick={() => setActiveTab('invite')}
-                                className={`flex-1 py-3 text-sm font-bold transition-colors ${activeTab === 'invite' ? 'text-emerald-400 border-b-2 border-emerald-400 bg-white/5' : 'text-text-muted hover:text-white'}`}
+                                className={`flex-1 py-3 text-sm font-bold transition-colors border-b-2 ${activeTab === 'invite' ? 'text-emerald-400 border-emerald-400 bg-white/5' : 'text-slate-400 border-transparent hover:text-white'}`}
                             >
                                 Existing Account
                             </button>
                             <button
                                 onClick={() => setActiveTab('create')}
-                                className={`flex-1 py-3 text-sm font-bold transition-colors ${activeTab === 'create' ? 'text-emerald-400 border-b-2 border-emerald-400 bg-white/5' : 'text-text-muted hover:text-white'}`}
+                                className={`flex-1 py-3 text-sm font-bold transition-colors border-b-2 ${activeTab === 'create' ? 'text-emerald-400 border-emerald-400 bg-white/5' : 'text-slate-400 border-transparent hover:text-white'}`}
                             >
                                 Register New
                             </button>
@@ -272,9 +276,10 @@ export default function DriversPage() {
                         {/* Content */}
                         <div className="p-6">
                             {activeTab === 'invite' ? (
-                                <div className="space-y-4">
-                                    <p className="text-sm text-text-muted">
-                                        Enter the email of an existing driver to verify their details before adding them.
+                                <div className="space-y-5">
+                                    <p className="text-sm text-slate-400 bg-blue-500/10 p-3 rounded-lg border border-blue-500/10 flex items-start gap-2">
+                                        <div className="w-1 h-1 rounded-full bg-blue-400 mt-1.5 shrink-0"></div>
+                                        Enter the email of an existing driver to verify their details before adding them to your Sacco.
                                     </p>
 
                                     {!foundDriver ? (
@@ -290,7 +295,7 @@ export default function DriversPage() {
                                                         value={inviteEmail}
                                                         onChange={e => setInviteEmail(e.target.value)}
                                                     />
-                                                    <button disabled={isSubmitting} className="px-4 bg-white/10 hover:bg-white/20 text-white rounded-lg font-bold transition-colors">
+                                                    <button disabled={isSubmitting} className="px-4 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold transition-colors border border-white/10">
                                                         {isSubmitting ? "..." : <Search size={20} />}
                                                     </button>
                                                 </div>
@@ -301,29 +306,29 @@ export default function DriversPage() {
                                         </form>
                                     ) : (
                                         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
-                                            <div className="p-4 bg-surface-dark border border-white/10 rounded-xl space-y-3">
+                                            <div className="p-4 bg-surface-light border border-white/10 rounded-xl space-y-3">
                                                 <div className="flex items-center gap-3 border-b border-white/5 pb-3">
                                                     <div className="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
                                                         {foundDriver.name.charAt(0)}
                                                     </div>
                                                     <div>
                                                         <h4 className="text-white font-bold">{foundDriver.name}</h4>
-                                                        <p className="text-sm text-text-muted">{foundDriver.email}</p>
+                                                        <p className="text-sm text-slate-400">{foundDriver.email}</p>
                                                     </div>
                                                 </div>
                                                 <div className="grid grid-cols-2 gap-2 text-sm">
                                                     <div>
-                                                        <p className="text-text-muted text-xs uppercase">License Info</p>
+                                                        <p className="mc-label mb-0">License</p>
                                                         <p className="text-white font-mono">{foundDriver.license_number || "N/A"}</p>
                                                     </div>
                                                     <div>
-                                                        <p className="text-text-muted text-xs uppercase">Verification</p>
-                                                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${foundDriver.verification_status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-yellow-500/20 text-yellow-500'}`}>
+                                                        <p className="mc-label mb-0">Status</p>
+                                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase ${foundDriver.verification_status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-yellow-500/20 text-yellow-500'}`}>
                                                             {foundDriver.verification_status || "Pending"}
                                                         </span>
                                                     </div>
                                                     <div className="col-span-2">
-                                                        <p className="text-text-muted text-xs uppercase">Current Sacco</p>
+                                                        <p className="mc-label mb-0">Current Sacco</p>
                                                         <p className="text-white">{foundDriver.sacco_id ? `Assigned (ID: ${foundDriver.sacco_id})` : "Unassigned - Ready to join"}</p>
                                                     </div>
                                                 </div>
@@ -332,14 +337,14 @@ export default function DriversPage() {
                                             <div className="flex gap-3">
                                                 <button
                                                     onClick={() => setFoundDriver(null)}
-                                                    className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-lg"
+                                                    className="mc-btn-secondary flex-1 py-3"
                                                 >
                                                     Cancel
                                                 </button>
                                                 <button
                                                     onClick={handleInvite}
                                                     disabled={isSubmitting}
-                                                    className="flex-1 py-3 mc-btn-primary"
+                                                    className="mc-btn-primary flex-1 py-3"
                                                 >
                                                     {isSubmitting ? "Adding..." : "Add to Sacco"}
                                                 </button>
@@ -381,7 +386,7 @@ export default function DriversPage() {
                                             onChange={e => setNewDriverForm({ ...newDriverForm, password: e.target.value })}
                                         />
                                     </div>
-                                    <button disabled={isSubmitting} className="mc-btn-primary w-full py-3">
+                                    <button disabled={isSubmitting} className="mc-btn-primary w-full py-3 mt-4">
                                         {isSubmitting ? "Creating..." : "Create & Add Driver"}
                                     </button>
                                 </form>
@@ -393,29 +398,29 @@ export default function DriversPage() {
 
             {/* VIEW PROFILE & ASSIGN ROUTE MODAL */}
             {viewDriver && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-                    <div className="mc-card w-full max-w-lg overflow-hidden animate-in zoom-in duration-200">
-                        <div className="p-6 border-b border-white/10 flex justify-between items-center bg-surface-dark">
+                <div className="mc-modal-backdrop">
+                    <div className="mc-modal-content">
+                        <div className="mc-modal-header">
                             <h2 className="text-xl font-bold text-white flex items-center gap-3">
                                 <User className="text-emerald-400" /> Driver Profile
                             </h2>
-                            <button onClick={() => setViewDriver(null)} className="text-text-muted hover:text-white">✕</button>
+                            <button onClick={() => setViewDriver(null)} className="text-slate-400 hover:text-white transition-colors">✕</button>
                         </div>
 
                         <div className="p-6 space-y-6">
                             {/* Driver Header */}
                             <div className="flex items-center gap-4">
-                                <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl font-bold border border-emerald-500/50">
+                                <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl font-bold border border-emerald-500/50 shadow-glow">
                                     {viewDriver.name.charAt(0)}
                                 </div>
                                 <div>
                                     <h3 className="text-2xl font-bold text-white">{viewDriver.name}</h3>
-                                    <p className="text-text-muted">{viewDriver.email}</p>
+                                    <p className="text-slate-400">{viewDriver.email}</p>
                                     <div className="flex gap-2 mt-2">
-                                        <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                        <span className="mc-badge mc-badge-success">
                                             {viewDriver.verification_status}
                                         </span>
-                                        <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-white/5 text-white border border-white/10">
+                                        <span className="mc-badge mc-badge-neutral">
                                             Driver ID: {viewDriver.id}
                                         </span>
                                     </div>
@@ -426,21 +431,21 @@ export default function DriversPage() {
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="p-3 bg-white/5 rounded-lg border border-white/5">
-                                    <p className="text-xs text-text-muted uppercase mb-1">License Number</p>
+                                    <p className="mc-label">License Number</p>
                                     <p className="text-white font-mono">{viewDriver.license_number || "Not Provided"}</p>
                                 </div>
                                 <div className="p-3 bg-white/5 rounded-lg border border-white/5">
-                                    <p className="text-xs text-text-muted uppercase mb-1">Assigned Vehicle</p>
+                                    <p className="mc-label">Assigned Vehicle</p>
                                     <p className="text-white font-bold">{viewDriver.assigned_vehicle || "None"}</p>
                                 </div>
                             </div>
 
-                            <div className="p-4 bg-surface-dark rounded-xl border border-dashed border-white/10">
+                            <div className="p-4 bg-slate-900/50 rounded-xl border border-dashed border-white/10">
                                 <div className="flex justify-between items-center mb-4">
-                                    <p className="font-bold text-white">Route Assignment</p>
+                                    <p className="font-bold text-white uppercase tracking-wide text-xs">Route Assignment</p>
                                     {viewDriver.assigned_route && (
-                                        <span className="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">
-                                            Currently: {viewDriver.assigned_route}
+                                        <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">
+                                            {viewDriver.assigned_route}
                                         </span>
                                     )}
                                 </div>
@@ -448,7 +453,7 @@ export default function DriversPage() {
                                 {viewDriver.assigned_vehicle ? (
                                     <div className="flex gap-2">
                                         <select
-                                            className="mc-input flex-1 bg-black/50"
+                                            className="mc-input flex-1 bg-black/30"
                                             value={selectedRouteId}
                                             onChange={(e) => setSelectedRouteId(e.target.value)}
                                         >
@@ -462,14 +467,14 @@ export default function DriversPage() {
                                         <button
                                             onClick={handleAssignRoute}
                                             disabled={isSubmitting || !selectedRouteId}
-                                            className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                            className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-emerald-500/20"
                                         >
                                             {isSubmitting ? "..." : "Assign"}
                                         </button>
                                     </div>
                                 ) : (
-                                    <div className="text-center py-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
-                                        <p className="text-yellow-500 text-sm">Assign a vehicle to this driver before assigning a route.</p>
+                                    <div className="text-center py-4 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                                        <p className="text-amber-500 text-xs font-bold">Assign a vehicle to this driver before assigning a route.</p>
                                     </div>
                                 )}
                             </div>

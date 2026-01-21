@@ -28,48 +28,52 @@
 @layer components {
   /* ========== PAGE BACKGROUND ========== */
   .mc-page {
-    @apply min-h-screen relative overflow-hidden bg-slate-950 text-slate-100;
+    @apply min-h-screen relative overflow-hidden bg-background text-text-main font-sans selection:bg-emerald-500/30 selection:text-emerald-200;
   }
 
   .mc-bg {
-    @apply absolute inset-0 bg-gradient-to-b
-    from-slate-950 via-slate-950 to-slate-900;
+    @apply absolute inset-0 bg-gradient-to-b from-background via-background to-slate-900;
   }
 
   .mc-grid {
-    @apply pointer-events-none absolute inset-0 opacity-[0.06]
+    @apply pointer-events-none absolute inset-0 opacity-[0.03]
     [background-image:linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)]
-    [background-size:48px_48px];
+    [background-size:48px_48px]
+    [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)];
   }
 
-  /* === GREEN BLOBS (FIXED OPACITY) === */
+  /* === BLUR BLOBS === */
   .mc-blob-a {
-    @apply pointer-events-none absolute -top-24 -left-24 h-80 w-80
-    rounded-full bg-emerald-500/10 blur-3xl;
+    @apply pointer-events-none absolute -top-40 -left-40 h-[500px] w-[500px]
+    rounded-full bg-emerald-500/20 blur-[100px] animate-pulseSlow;
   }
 
   .mc-blob-b {
-    @apply pointer-events-none absolute top-32 left-1/3 h-64 w-64
-    rounded-full bg-emerald-400/10 blur-3xl;
+    @apply pointer-events-none absolute top-1/4 left-1/3 h-[300px] w-[300px]
+    rounded-full bg-teal-500/10 blur-[80px] animate-pulseSlow delay-700;
   }
 
   .mc-blob-c {
-    @apply pointer-events-none absolute bottom-0 right-0 h-96 w-96
-    rounded-full bg-emerald-600/10 blur-3xl;
+    @apply pointer-events-none absolute -bottom-40 -right-40 h-[600px] w-[600px]
+    rounded-full bg-emerald-600/10 blur-[120px] animate-pulseSlow delay-1000;
   }
 
   /* ========== CONTAINER ========== */
   .mc-shell {
-    @apply relative mx-auto w-full max-w-6xl px-6 py-8;
+    @apply relative mx-auto w-full max-w-7xl px-6 py-8;
   }
 
   /* ========== GLASS UI ========== */
   .mc-glass {
-    @apply rounded-3xl bg-white/5 ring-1 ring-white/10 backdrop-blur-xl;
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-glass;
   }
 
   .mc-card {
-    @apply mc-glass shadow-[0_30px_80px_-30px_rgba(0,0,0,0.9)];
+    @apply mc-glass rounded-3xl overflow-hidden transition-all duration-300;
+  }
+
+  .mc-card-hover {
+    @apply hover:bg-white/10 hover:shadow-glow hover:-translate-y-1;
   }
 
   .mc-card-pad {
@@ -77,91 +81,159 @@
   }
 
   .mc-section {
-    @apply mc-card p-5;
+    @apply mc-card p-6;
   }
 
   /* ========== TEXT ========== */
   .mc-h1 {
-    @apply text-4xl font-semibold leading-tight;
+    @apply text-4xl font-bold tracking-tight text-white mb-4;
   }
 
   .mc-h2 {
-    @apply text-xl font-semibold;
+    @apply text-2xl font-bold tracking-tight text-white mb-2;
+  }
+
+  .mc-h3 {
+    @apply text-lg font-semibold text-white mb-2;
   }
 
   .mc-muted {
-    @apply text-slate-400;
+    @apply text-slate-400 font-medium;
   }
 
   .mc-label {
-    @apply text-[11px] uppercase tracking-wider text-slate-400 font-semibold mb-1 block;
+    @apply text-[11px] uppercase tracking-wider text-slate-400 font-bold mb-1.5 block;
   }
 
   /* ========== BUTTONS ========== */
   .mc-btn {
     @apply inline-flex items-center justify-center gap-2
-    rounded-2xl px-4 py-3 font-semibold transition
-    outline-none focus-visible:ring-2
-    focus-visible:ring-emerald-500/40
-    disabled:opacity-50 disabled:cursor-not-allowed;
+    rounded-xl px-5 py-2.5 font-bold transition-all duration-200
+    outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900
+    disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
   }
 
   .mc-btn-primary {
-    @apply mc-btn bg-emerald-500 text-slate-950
-    hover:bg-emerald-400
-    shadow-[0_10px_30px_-10px_rgba(16,185,129,0.6)];
+    @apply mc-btn bg-gradient-to-r from-emerald-500 to-teal-500 text-white
+    hover:from-emerald-400 hover:to-teal-400
+    shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40
+    active:scale-95;
   }
 
   .mc-btn-secondary {
-    @apply mc-btn bg-white/5 text-slate-200
-    ring-1 ring-white/10 hover:bg-white/10;
+    @apply mc-btn bg-white/5 text-white
+    border border-white/10 hover:bg-white/10
+    hover:border-white/20 active:bg-white/5;
+  }
+
+  .mc-btn-danger {
+    @apply mc-btn bg-red-500/10 text-red-400
+    border border-red-500/20 hover:bg-red-500/20
+    hover:border-red-500/30;
   }
 
   .mc-btn-ghost {
-    @apply mc-btn bg-transparent text-slate-200
-    hover:bg-white/5 ring-1 ring-white/10;
+    @apply mc-btn bg-transparent text-slate-300
+    hover:text-white hover:bg-white/5;
   }
 
   .mc-btn-sm {
-    @apply rounded-xl px-3 py-2 text-sm;
+    @apply text-xs px-3 py-1.5 rounded-lg;
+  }
+
+  .mc-btn-icon {
+    @apply p-2 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors;
   }
 
   /* ========== INPUTS ========== */
   .mc-input {
-    @apply w-full rounded-2xl
-    bg-slate-900/60 px-4 py-3
-    text-slate-100 placeholder:text-slate-500
-    ring-1 ring-white/10 outline-none
-    focus:ring-2 focus:ring-emerald-500/50
+    @apply w-full rounded-xl
+    bg-slate-900/50 px-4 py-3
+    text-white placeholder:text-slate-500
+    border border-white/10 outline-none
+    focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50
     transition-all duration-200;
   }
   
-  /* Link styles */
   .mc-link {
-    @apply text-emerald-400 hover:text-emerald-300 hover:underline transition-colors;
+    @apply text-emerald-400 hover:text-emerald-300 font-medium hover:underline transition-colors decoration-2 decoration-emerald-500/30 underline-offset-2;
   }
+
+  /* ========== TABLES ========== */
+  .mc-table-container {
+    @apply w-full overflow-hidden rounded-2xl bg-slate-900/40 border border-white/5;
+  }
+
+  .mc-table {
+    @apply w-full text-left text-sm text-slate-400;
+  }
+
+  .mc-table thead {
+    @apply bg-white/5 text-xs uppercase tracking-wider font-bold text-slate-300;
+  }
+
+  .mc-table th {
+    @apply px-6 py-4;
+  }
+
+  .mc-table tbody tr {
+    @apply border-b border-white/5 hover:bg-white/5 transition-colors duration-150;
+  }
+
+  .mc-table td {
+    @apply px-6 py-4 whitespace-nowrap;
+  }
+
+  /* ========== BADGES ========== */
+  .mc-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide border;
+  }
+  .mc-badge-success { @apply bg-emerald-500/10 text-emerald-400 border-emerald-500/20; }
+  .mc-badge-warning { @apply bg-amber-500/10 text-amber-400 border-amber-500/20; }
+  .mc-badge-danger  { @apply bg-red-500/10 text-red-400 border-red-500/20; }
+  .mc-badge-info    { @apply bg-blue-500/10 text-blue-400 border-blue-500/20; }
+  .mc-badge-neutral { @apply bg-slate-500/10 text-slate-400 border-slate-500/20; }
+
 
   /* ========== DASHBOARD LAYOUTS ========== */
   .mc-app {
-    @apply min-h-screen bg-slate-950 text-slate-100;
+    @apply min-h-screen bg-background text-text-main font-sans;
   }
 
   .mc-app-grid {
-    @apply min-h-screen grid grid-cols-1 lg:grid-cols-[260px_1fr];
+    @apply min-h-screen grid grid-cols-1 lg:grid-cols-[280px_1fr];
   }
 
   .mc-sidebar {
     @apply hidden lg:flex flex-col gap-6 p-6
-    bg-white/5 ring-1 ring-white/10;
+    bg-slate-900/60 border-r border-white/5 backdrop-blur-xl relative z-20;
   }
 
   .mc-nav-item {
-    @apply flex items-center gap-3 rounded-2xl
-    px-3 py-2.5 text-sm text-slate-200
-    hover:bg-white/5 transition;
+    @apply flex items-center gap-3 rounded-xl
+    px-4 py-3 text-sm font-medium text-slate-400
+    border border-transparent
+    hover:bg-white/5 hover:text-white transition-all duration-200;
   }
 
   .mc-nav-item-active {
-    @apply bg-emerald-500/15 ring-1 ring-emerald-500/30;
+    @apply bg-emerald-500/10 text-emerald-400 border-emerald-500/20;
+  }
+
+  /* ========== MODALS ========== */
+  .mc-modal-backdrop {
+    @apply fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn;
+  }
+  
+  .mc-modal-content {
+    @apply mc-card w-full max-w-lg bg-surface border border-white/10 animate-slideUp shadow-2xl;
+  }
+  
+  .mc-modal-header {
+    @apply flex items-center justify-between p-6 border-b border-white/10;
+  }
+  
+  .mc-modal-body {
+    @apply p-6;
   }
 }

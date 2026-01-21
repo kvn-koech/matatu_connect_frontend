@@ -119,19 +119,19 @@ export default function FleetPage() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto space-y-6">
+        <div className="mc-shell space-y-6 animate-fadeIn">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-3xl font-bold text-white">Fleet Management</h1>
-                    <p className="text-text-muted">Manage your vehicles and their status.</p>
+                    <h1 className="mc-h1">Fleet Management</h1>
+                    <p className="mc-muted">Manage your vehicles and their status.</p>
                 </div>
                 <div className="flex gap-4">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={18} />
+                    <div className="relative group">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-emerald-400 transition-colors" size={18} />
                         <input
                             type="text"
                             placeholder="Search fleet..."
-                            className="pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-text-muted focus:outline-none focus:border-primary w-64"
+                            className="mc-input pl-10 w-64"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -145,60 +145,85 @@ export default function FleetPage() {
                 </div>
             </div>
 
-            <div className="bg-surface-dark rounded-2xl p-6 shadow-lg">
-                <table className="w-full text-left text-sm text-text-muted">
-                    <thead className="border-b border-white/10 uppercase tracking-wider text-xs">
+            <div className="mc-table-container">
+                <table className="mc-table">
+                    <thead>
                         <tr>
-                            <th className="py-4">Number Plate</th>
-                            <th className="py-4">Capacity</th>
-                            <th className="py-4">Route</th>
-                            <th className="py-4">Driver</th>
-                            <th className="py-4">Status</th>
-                            <th className="py-4 text-right">Actions</th>
+                            <th>Number Plate</th>
+                            <th>Capacity</th>
+                            <th>Route</th>
+                            <th>Driver</th>
+                            <th>Status</th>
+                            <th className="text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody>
                         {vehicles.filter(v =>
                             v.plate_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             (v.driver && v.driver.toLowerCase().includes(searchQuery.toLowerCase()))
                         ).map((vehicle) => (
-                            <tr key={vehicle.id} className="hover:bg-white/5 transition-colors">
-                                <td className="py-4 font-medium text-white">{vehicle.plate_number}</td>
-                                <td className="py-4">{vehicle.capacity}</td>
-                                <td className="py-4">{vehicle.route ? (vehicle.route.name || `${vehicle.route.origin}-${vehicle.route.destination}`) : "Unassigned"}</td>
-                                <td className="py-4">
-                                    <div className="flex flex-col">
-                                        <span className="text-white text-sm">{vehicle.driver || "Unassigned"}</span>
-                                        {vehicle.driver_id && <span className="text-xs text-text-muted">ID: {vehicle.driver_id}</span>}
-                                    </div>
+                            <tr key={vehicle.id}>
+                                <td className="font-bold text-white font-mono">{vehicle.plate_number}</td>
+                                <td>{vehicle.capacity} Seats</td>
+                                <td>
+                                    {vehicle.route ? (
+                                        <span className="flex items-center gap-2">
+                                            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                            {vehicle.route.name || `${vehicle.route.origin}-${vehicle.route.destination}`}
+                                        </span>
+                                    ) : (
+                                        <span className="text-slate-600 italic">Unassigned</span>
+                                    )}
                                 </td>
-                                <td className="py-4">
-                                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${vehicle.assignment_status === "active"
-                                        ? "bg-emerald-500/10 text-emerald-400"
-                                        : "bg-yellow-500/10 text-yellow-500"
+                                <td>
+                                    {vehicle.driver ? (
+                                        <div className="flex flex-col">
+                                            <span className="text-white text-sm font-medium">{vehicle.driver}</span>
+                                            {vehicle.driver_id && <span className="text-[10px] text-slate-500">ID: {vehicle.driver_id}</span>}
+                                        </div>
+                                    ) : (
+                                        <span className="px-2 py-0.5 bg-white/5 rounded text-xs text-slate-500">No Driver</span>
+                                    )}
+                                </td>
+                                <td>
+                                    <span className={`mc-badge ${vehicle.assignment_status === "active"
+                                        ? "mc-badge-success"
+                                        : "mc-badge-warning"
                                         }`}>
                                         {vehicle.assignment_status || "Active"}
                                     </span>
                                 </td>
-                                <td className="py-4 text-right">
+                                <td className="text-right">
                                     <button
                                         onClick={() => setSelectedVehicle(vehicle)}
-                                        className="text-primary hover:text-emerald-300 text-xs font-semibold"
+                                        className="mc-link text-xs uppercase font-bold tracking-wider"
                                     >
-                                        View Details
+                                        Manage
                                     </button>
                                 </td>
                             </tr>
                         ))}
+                        {vehicles.length === 0 && (
+                            <tr>
+                                <td colSpan="6" className="text-center py-12 text-slate-500">
+                                    No vehicles found. Add one to get started.
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
 
             {/* VIEW / EDIT VEHICLE MODAL */}
             {selectedVehicle && (
-                <Modal title={isEditing ? `Edit Vehicle: ${selectedVehicle.plate_number}` : `Vehicle Details: ${selectedVehicle.plate_number}`} onClose={() => { setSelectedVehicle(null); setIsEditing(false); }}>
+                <Modal title={isEditing ? `Edit Vehicle` : `Vehicle Details`} onClose={() => { setSelectedVehicle(null); setIsEditing(false); }}>
                     {isEditing ? (
-                        <form onSubmit={handleUpdateVehicle} className="space-y-4">
+                        <form onSubmit={handleUpdateVehicle} className="space-y-5">
+                            <div className="bg-white/5 p-4 rounded-xl border border-white/10 mb-4">
+                                <p className="text-xs text-slate-500 font-bold uppercase mb-1">Vehicle</p>
+                                <p className="text-xl font-bold text-white font-mono">{selectedVehicle.plate_number}</p>
+                            </div>
+
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="mc-label">Capacity</label>
@@ -212,7 +237,7 @@ export default function FleetPage() {
                                 <div>
                                     <label className="mc-label">Route</label>
                                     <select
-                                        className="mc-input bg-slate-900 appearance-none"
+                                        className="mc-input appearance-none"
                                         value={selectedVehicle.route_id || ""}
                                         onChange={e => setSelectedVehicle({ ...selectedVehicle, route_id: e.target.value })}
                                     >
@@ -226,7 +251,7 @@ export default function FleetPage() {
                             <div>
                                 <label className="mc-label">Driver</label>
                                 <select
-                                    className="mc-input bg-slate-900 appearance-none"
+                                    className="mc-input appearance-none"
                                     value={selectedVehicle.driver_id || ""}
                                     onChange={e => setSelectedVehicle({ ...selectedVehicle, driver_id: e.target.value })}
                                 >
@@ -236,79 +261,61 @@ export default function FleetPage() {
                                     ))}
                                 </select>
                             </div>
-                            <div className="flex gap-3 mt-4">
-                                <button type="button" onClick={() => setIsEditing(false)} className="flex-1 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors border border-white/10">
+                            <div className="flex gap-3 mt-6">
+                                <button type="button" onClick={() => setIsEditing(false)} className="mc-btn-secondary flex-1">
                                     Cancel
                                 </button>
-                                <button disabled={isSubmitting} className="flex-1 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg transition-colors">
+                                <button disabled={isSubmitting} className="mc-btn-primary flex-1">
                                     {isSubmitting ? "Saving..." : "Save Changes"}
                                 </button>
                             </div>
                         </form>
                     ) : (
                         <div className="space-y-6">
-                            <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10">
+                            <div className="flex items-center justify-between p-4 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
                                 <div>
-                                    <p className="text-sm text-text-muted">Status</p>
-                                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${selectedVehicle.assignment_status === "active"
-                                        ? "bg-emerald-500/10 text-emerald-400"
-                                        : "bg-yellow-500/10 text-yellow-500"
+                                    <p className="text-xs text-emerald-400 font-bold uppercase mb-1">Status</p>
+                                    <span className={`mc-badge ${selectedVehicle.assignment_status === "active"
+                                        ? "mc-badge-success"
+                                        : "mc-badge-warning"
                                         }`}>
                                         {selectedVehicle.assignment_status || "Active"}
                                     </span>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-sm text-text-muted">Capacity</p>
-                                    <p className="text-xl font-bold text-white">{selectedVehicle.capacity} Seats</p>
+                                    <p className="text-xs text-emerald-400 font-bold uppercase mb-1">Plate Number</p>
+                                    <p className="text-2xl font-bold text-white font-mono">{selectedVehicle.plate_number}</p>
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
-                                <div>
-                                    <h4 className="text-sm font-bold text-white mb-2 uppercase tracking-wider">Assignment Info</h4>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="p-3 bg-surface-dark rounded-lg">
-                                            <p className="text-xs text-text-muted">Driver</p>
-                                            <p className="text-white font-medium">{selectedVehicle.driver || "Unassigned"}</p>
-                                            {selectedVehicle.driver_id && <p className="text-[10px] text-text-muted">ID: {selectedVehicle.driver_id}</p>}
-                                        </div>
-                                        <div className="p-3 bg-surface-dark rounded-lg">
-                                            <p className="text-xs text-text-muted">Route</p>
-                                            <p className="text-white font-medium">{selectedVehicle.route ? (selectedVehicle.route.name || `${selectedVehicle.route.origin}-${selectedVehicle.route.destination}`) : "Unassigned"}</p>
-                                        </div>
-                                    </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-4 bg-surface-light rounded-xl border border-white/5">
+                                    <p className="mc-label">Driver</p>
+                                    <p className="text-white font-medium text-lg">{selectedVehicle.driver || "Unassigned"}</p>
+                                    {selectedVehicle.driver_id && <p className="text-xs text-slate-500 mt-1">ID: {selectedVehicle.driver_id}</p>}
                                 </div>
-
-                                {/* Performance Data - Hidden until Real Log Integration */}
-                                {/* 
-                                <div>
-                                    <h4 className="text-sm font-bold text-white mb-2 uppercase tracking-wider">Performance (Mock)</h4>
-                                    <div className="p-3 bg-surface-dark rounded-lg flex justify-between items-center">
-                                        <div>
-                                            <p className="text-xs text-text-muted">Daily Revenue</p>
-                                            <p className="text-white font-bold">KES 12,500</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-xs text-text-muted">Fuel Efficiency</p>
-                                            <p className="text-white font-bold">8.2 km/L</p>
-                                        </div>
-                                    </div>
-                                </div> 
-                                */}
+                                <div className="p-4 bg-surface-light rounded-xl border border-white/5">
+                                    <p className="mc-label">Route</p>
+                                    <p className="text-white font-medium text-lg">{selectedVehicle.route ? (selectedVehicle.route.name || `${selectedVehicle.route.origin}-${selectedVehicle.route.destination}`) : "Unassigned"}</p>
+                                </div>
+                                <div className="p-4 bg-surface-light rounded-xl border border-white/5">
+                                    <p className="mc-label">Capacity</p>
+                                    <p className="text-white font-medium text-lg">{selectedVehicle.capacity} Seats</p>
+                                </div>
                             </div>
 
-                            <div className="flex gap-3 mt-6">
+                            <div className="flex gap-3 mt-6 pt-6 border-t border-white/5">
                                 <button
                                     onClick={() => setIsEditing(true)}
-                                    className="flex-1 py-2 bg-white/5 hover:bg-white/10 text-white rounded-lg transition-colors border border-white/10"
+                                    className="mc-btn-secondary flex-1"
                                 >
-                                    Edit
+                                    Edit Details
                                 </button>
                                 <button
                                     onClick={() => handleDeleteVehicle(selectedVehicle.id)}
-                                    className="flex-1 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg transition-colors border border-red-500/20"
+                                    className="mc-btn-danger flex-1"
                                 >
-                                    Delete
+                                    Delete Vehicle
                                 </button>
                             </div>
                         </div>
@@ -319,17 +326,18 @@ export default function FleetPage() {
             {/* ADD VEHICLE MODAL */}
             {showModal && (
                 <Modal title="Register New Vehicle" onClose={() => setShowModal(false)}>
-                    <form onSubmit={handleAddVehicle} className="space-y-4">
-                        <div>
+                    <form onSubmit={handleAddVehicle} className="space-y-5">
+                        <div className="bg-surface-light p-4 rounded-xl border border-white/5">
                             <label className="mc-label">Plate Number</label>
                             <input
-                                className="mc-input uppercase"
+                                className="mc-input uppercase font-mono tracking-widest text-lg"
                                 placeholder="KDA 123Z"
                                 value={vehicleForm.plate_number}
                                 onChange={e => setVehicleForm({ ...vehicleForm, plate_number: e.target.value.toUpperCase() })}
                             />
-                            <p className="text-xs text-text-muted mt-1">Format: KAA 123B (Standard Kenyan Plate)</p>
+                            <p className="text-[10px] text-slate-500 mt-2 font-medium">Format: KAA 123B (Standard Kenyan Plate)</p>
                         </div>
+
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="mc-label">Capacity</label>
@@ -343,7 +351,7 @@ export default function FleetPage() {
                             <div>
                                 <label className="mc-label">Route</label>
                                 <select
-                                    className="mc-input bg-slate-900 appearance-none"
+                                    className="mc-input appearance-none"
                                     value={vehicleForm.route_id}
                                     onChange={e => setVehicleForm({ ...vehicleForm, route_id: e.target.value })}
                                 >
@@ -357,7 +365,7 @@ export default function FleetPage() {
                         <div>
                             <label className="mc-label">Driver (Optional)</label>
                             <select
-                                className="mc-input bg-slate-900 appearance-none"
+                                className="mc-input appearance-none"
                                 value={vehicleForm.driver_id}
                                 onChange={e => setVehicleForm({ ...vehicleForm, driver_id: e.target.value })}
                             >
@@ -367,7 +375,7 @@ export default function FleetPage() {
                                 ))}
                             </select>
                         </div>
-                        <button disabled={isSubmitting} className="mc-btn-primary w-full mt-4">
+                        <button disabled={isSubmitting} className="mc-btn-primary w-full mt-4 py-3">
                             {isSubmitting ? "Registering..." : "Register Vehicle"}
                         </button>
                     </form>
