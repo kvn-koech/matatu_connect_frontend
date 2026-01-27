@@ -16,13 +16,13 @@ import NotFound from "./pages/NotFound.jsx";
 import FleetPage from "./pages/FleetPage.jsx";
 import DriversPage from "./pages/DriversPage.jsx";
 import ManageRoutesPage from "./pages/ManageRoutesPage.jsx";
-import ReviewsPage from "./pages/ReviewsPage.jsx";
+import SettingsPage from "./pages/SettingsPage.jsx";
 // Layouts
 import MainLayout from "./components/layout/MainLayout.jsx";
 import PublicLayout from "./components/layout/PublicLayout.jsx";
 
 function AppRoutes() {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
 
   if (loading) {
     return (
@@ -176,6 +176,18 @@ function AppRoutes() {
           isAuthenticated ? (
             <MainLayout role="manager">
               <ReviewsPage />
+            </MainLayout>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          isAuthenticated ? (
+            <MainLayout role={user?.role || "commuter"}>
+              <SettingsPage />
             </MainLayout>
           ) : (
             <Navigate to="/login" replace />

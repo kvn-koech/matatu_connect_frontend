@@ -70,9 +70,9 @@ const Sidebar = ({ role }) => {
 
       {/* FOOTER */}
       <div className="px-4 py-4 border-t border-white/10 space-y-2">
-        <button className={linkClass("#")}>
+        <Link to="/settings" className={linkClass("/settings")}>
           <Settings size={18} /> Settings
-        </button>
+        </Link>
         <button onClick={logout} className="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-black font-semibold">
           <LogOut size={18} /> Log out
         </button>
