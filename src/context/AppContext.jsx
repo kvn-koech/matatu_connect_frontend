@@ -85,24 +85,33 @@ export const AppProvider = ({ children }) => {
 
   // Predefined Nairobi Route Paths (approximate waypoints)
   const ROUTE_COORDINATES = {
-    "CBD - Westlands": [
+    "Nairobi CBD - Ngong": [
       { lat: -1.2834, lng: 36.8235 }, // CBD (Archives)
-      { lat: -1.2810, lng: 36.8160 }, // University Way
-      { lat: -1.2750, lng: 36.8130 }, // Museum Hill
-      { lat: -1.2680, lng: 36.8110 }, // Westlands
-      { lat: -1.2650, lng: 36.8080 }, // Sarit
-    ],
-    "CBD - Cassandra": [
-      { lat: -1.2834, lng: 36.8235 }, // CBD
       { lat: -1.2921, lng: 36.8219 }, // Community
-      { lat: -1.3000, lng: 36.8000 }, // Ngong Rd
-      { lat: -1.3100, lng: 36.7800 }, // Junction
+      { lat: -1.3000, lng: 36.7900 }, // Ngong Rd Start
+      { lat: -1.3150, lng: 36.7700 }, // Junction
+      { lat: -1.3300, lng: 36.7500 }, // Karen
+      { lat: -1.3600, lng: 36.6500 }, // Ngong Town
     ],
-    "CBD - Thika Road": [
+    "Nairobi CBD - Kikuyu": [
+      { lat: -1.2834, lng: 36.8235 }, // CBD
+      { lat: -1.2650, lng: 36.8000 }, // Westlands
+      { lat: -1.2550, lng: 36.7800 }, // Kangemi
+      { lat: -1.2500, lng: 36.6667 }, // Kikuyu
+    ],
+    "Nairobi CBD - Thika": [
       { lat: -1.2834, lng: 36.8235 }, // CBD
       { lat: -1.2700, lng: 36.8400 }, // Pangani
-      { lat: -1.2500, lng: 36.8600 }, // Muthaiga
-      { lat: -1.2300, lng: 36.8800 }, // Garden City
+      { lat: -1.2200, lng: 36.8900 }, // Roysambu
+      { lat: -1.1500, lng: 36.9600 }, // Ruiru
+      { lat: -1.0333, lng: 37.0693 }, // Thika
+    ],
+    "Nairobi CBD - Kitengela": [
+      { lat: -1.2834, lng: 36.8235 }, // CBD
+      { lat: -1.3000, lng: 36.8500 }, // Mombasa Rd Start
+      { lat: -1.3300, lng: 36.8800 }, // South B/C
+      { lat: -1.3800, lng: 36.9300 }, // JKIA Turnoff
+      { lat: -1.4800, lng: 36.9600 }, // Kitengela
     ],
     // Fallback Generic Loop
     "generic": [
