@@ -155,7 +155,11 @@ export const AppProvider = ({ children }) => {
           // distinct vehicles on same route start at different points
           const pathLength = path.length;
           const startIndex = (v.id || 0) % pathLength;
-          const startPos = path[startIndex];
+          let startPos = path[startIndex];
+
+          // Add slight jitter to prevent perfect overlapping if multiple vehicles share the same start index
+          const jitterLat = (Math.random() - 0.5) * 0.002;
+          const jitterLng = (Math.random() - 0.5) * 0.002;
 
           return {
             id: v.id,
@@ -165,8 +169,8 @@ export const AppProvider = ({ children }) => {
             driverPhone: v.driver_phone,
             routeName: routeName,
             route: path,
-            lat: startPos.lat,
-            lng: startPos.lng,
+            lat: startPos.lat + jitterLat,
+            lng: startPos.lng + jitterLng,
             status: "available",
             assignment_status: v.assignment_status,
             passengerCapacity: v.capacity,
