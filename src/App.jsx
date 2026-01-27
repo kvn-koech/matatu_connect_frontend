@@ -16,6 +16,7 @@ import NotFound from "./pages/NotFound.jsx";
 import FleetPage from "./pages/FleetPage.jsx";
 import DriversPage from "./pages/DriversPage.jsx";
 import ManageRoutesPage from "./pages/ManageRoutesPage.jsx";
+import ReviewsPage from "./pages/ReviewsPage.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
 // Layouts
 import MainLayout from "./components/layout/MainLayout.jsx";
