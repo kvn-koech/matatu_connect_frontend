@@ -114,6 +114,13 @@ export const AppProvider = ({ children }) => {
       { lat: -1.3800, lng: 36.9300 }, // JKIA Turnoff
       { lat: -1.4800, lng: 36.9600 }, // Kitengela
     ],
+    "Githurai - CBD": [
+      { lat: -1.2000, lng: 36.9100 }, // Githurai 45
+      { lat: -1.2200, lng: 36.8900 }, // Roysambu
+      { lat: -1.2500, lng: 36.8600 }, // Muthaiga
+      { lat: -1.2700, lng: 36.8400 }, // Pangani
+      { lat: -1.2834, lng: 36.8235 }, // CBD
+    ],
 
     // === ALIASES (SAFEGUARDS FOR ALTERNATE NAMING) ===
     "CBD - Westlands": [
@@ -183,10 +190,11 @@ export const AppProvider = ({ children }) => {
 
           // Fuzzy match fallback: Check if route name contains key keywords
           if (!ROUTE_COORDINATES[routeName]) {
-            if (routeName.includes("Westlands")) path = ROUTE_COORDINATES["CBD - Westlands"];
-            else if (routeName.includes("Ngong")) path = ROUTE_COORDINATES["Nairobi CBD - Ngong"];
-            else if (routeName.includes("Thika")) path = ROUTE_COORDINATES["Nairobi CBD - Thika"];
-            else if (routeName.includes("Kitengela")) path = ROUTE_COORDINATES["Nairobi CBD - Kitengela"];
+            if (routeName.toLowerCase().includes("westlands")) path = ROUTE_COORDINATES["CBD - Westlands"];
+            else if (routeName.toLowerCase().includes("ngong")) path = ROUTE_COORDINATES["Nairobi CBD - Ngong"];
+            else if (routeName.toLowerCase().includes("thika")) path = ROUTE_COORDINATES["Nairobi CBD - Thika"];
+            else if (routeName.toLowerCase().includes("kitengela")) path = ROUTE_COORDINATES["Nairobi CBD - Kitengela"];
+            else if (routeName.toLowerCase().includes("githurai")) path = ROUTE_COORDINATES["Githurai - CBD"];
           }
 
           // If we have origin/dest in route, we could try to fuzzy match, but exact name is safer.
