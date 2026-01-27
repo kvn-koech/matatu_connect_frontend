@@ -137,12 +137,16 @@ export const AppProvider = ({ children }) => {
       { lat: -1.4800, lng: 36.9600 },
     ],
 
-    // Fallback Generic Loop
+    // Fallback Generic Loop - Expanded to prevent stacking
     "generic": [
       { lat: -1.2921, lng: 36.8219 },
-      { lat: -1.2925, lng: 36.8225 },
-      { lat: -1.2930, lng: 36.8230 },
-      { lat: -1.2935, lng: 36.8235 },
+      { lat: -1.2850, lng: 36.8250 },
+      { lat: -1.2800, lng: 36.8300 },
+      { lat: -1.2750, lng: 36.8350 },
+      { lat: -1.2700, lng: 36.8400 },
+      { lat: -1.2650, lng: 36.8350 },
+      { lat: -1.2700, lng: 36.8250 },
+      { lat: -1.2800, lng: 36.8150 },
       { lat: -1.2921, lng: 36.8219 }, // Loop back
     ]
   };
@@ -189,15 +193,16 @@ export const AppProvider = ({ children }) => {
           // Fallback: If no predefined path, generate a simple line based on lat/lng if available (backend doesn't send yet)
 
           // Distribute Start Position
-          // Use Vehicle ID to pick a different starting index along the path
-          // distinct vehicles on same route start at different points
+          // Improved Hashing to prevent collisions for sequential IDs
           const pathLength = path.length;
-          const startIndex = (v.id || 0) % pathLength;
+          // Use a prime multiplier (7) and offset (v.id + 3) to scatter positions
+          const startIndex = ((v.id || 0) * 7 + 3) % pathLength;
           let startPos = path[startIndex];
 
-          // Add slight jitter to prevent perfect overlapping if multiple vehicles share the same start index
-          const jitterLat = (Math.random() - 0.5) * 0.002;
-          const jitterLng = (Math.random() - 0.5) * 0.002;
+          // Add LARGER jitter to ensure visible separation
+          // Previous 0.002 was too subtle. Increasing to 0.005 (~500m variance)
+          const jitterLat = (Math.random() - 0.5) * 0.008;
+          const jitterLng = (Math.random() - 0.5) * 0.008;
 
           return {
             id: v.id,
