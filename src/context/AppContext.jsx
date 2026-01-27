@@ -83,6 +83,37 @@ export const AppProvider = ({ children }) => {
   ];
 
 
+  // Predefined Nairobi Route Paths (approximate waypoints)
+  const ROUTE_COORDINATES = {
+    "CBD - Westlands": [
+      { lat: -1.2834, lng: 36.8235 }, // CBD (Archives)
+      { lat: -1.2810, lng: 36.8160 }, // University Way
+      { lat: -1.2750, lng: 36.8130 }, // Museum Hill
+      { lat: -1.2680, lng: 36.8110 }, // Westlands
+      { lat: -1.2650, lng: 36.8080 }, // Sarit
+    ],
+    "CBD - Cassandra": [
+      { lat: -1.2834, lng: 36.8235 }, // CBD
+      { lat: -1.2921, lng: 36.8219 }, // Community
+      { lat: -1.3000, lng: 36.8000 }, // Ngong Rd
+      { lat: -1.3100, lng: 36.7800 }, // Junction
+    ],
+    "CBD - Thika Road": [
+      { lat: -1.2834, lng: 36.8235 }, // CBD
+      { lat: -1.2700, lng: 36.8400 }, // Pangani
+      { lat: -1.2500, lng: 36.8600 }, // Muthaiga
+      { lat: -1.2300, lng: 36.8800 }, // Garden City
+    ],
+    // Fallback Generic Loop
+    "generic": [
+      { lat: -1.2921, lng: 36.8219 },
+      { lat: -1.2925, lng: 36.8225 },
+      { lat: -1.2930, lng: 36.8230 },
+      { lat: -1.2935, lng: 36.8235 },
+      { lat: -1.2921, lng: 36.8219 }, // Loop back
+    ]
+  };
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -107,6 +138,24 @@ export const AppProvider = ({ children }) => {
         const mappedVehicles = apiVehicles.map(v => {
           // Find matching route
           const matchedRoute = currentRoutes.find(r => r.id === v.route_id);
+          const routeName = matchedRoute
+            ? matchedRoute.name // e.g., "CBD - Westlands" (from Route.to_dict())
+            : (v.route_id ? `Route ${v.route_id}` : "Unassigned");
+
+          // Determine Path
+          // Try exact name match, or partial, or generic
+          let path = ROUTE_COORDINATES[routeName]
+            || ROUTE_COORDINATES["generic"];
+
+          // If we have origin/dest in route, we could try to fuzzy match, but exact name is safer.
+          // Fallback: If no predefined path, generate a simple line based on lat/lng if available (backend doesn't send yet)
+
+          // Distribute Start Position
+          // Use Vehicle ID to pick a different starting index along the path
+          // distinct vehicles on same route start at different points
+          const pathLength = path.length;
+          const startIndex = (v.id || 0) % pathLength;
+          const startPos = path[startIndex];
 
           return {
             id: v.id,
@@ -114,20 +163,15 @@ export const AppProvider = ({ children }) => {
             driverName: v.driver,
             driverId: v.driver_id,
             driverPhone: v.driver_phone,
-            // Map route name from matched route, or use fallback
-            routeName: matchedRoute ? matchedRoute.name : (v.route_id ? `Route ${v.route_id}` : "Unassigned"),
-            route: matchedRoute ? [
-              // Mock route coordinates for now if backend doesn't provide waypoints
-              { lat: v.latitude || -1.2921, lng: v.longitude || 36.8219 },
-              { lat: (v.latitude || -1.2921) + 0.01, lng: (v.longitude || 36.8219) + 0.01 }
-            ] : null,
-            lat: v.latitude || -1.2921,
-            lng: v.longitude || 36.8219,
+            routeName: routeName,
+            route: path,
+            lat: startPos.lat,
+            lng: startPos.lng,
             status: "available",
             assignment_status: v.assignment_status,
             passengerCapacity: v.capacity,
-            rating: 4.5, // Mock rating
-            _posIndex: 0
+            rating: 4.5,
+            _posIndex: startIndex // Start moving from here
           };
         });
 
@@ -159,7 +203,7 @@ export const AppProvider = ({ children }) => {
           };
         })
       );
-    }, 2000);
+    }, 3000); // Slower updates (3s) for smoother visualization jump
 
     return () => clearInterval(interval);
   }, []);
