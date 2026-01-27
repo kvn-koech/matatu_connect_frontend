@@ -85,8 +85,9 @@ export const AppProvider = ({ children }) => {
 
   // Predefined Nairobi Route Paths (approximate waypoints)
   const ROUTE_COORDINATES = {
+    // === EXACT MATCHES FROM SEED DATA ===
     "Nairobi CBD - Ngong": [
-      { lat: -1.2834, lng: 36.8235 }, // CBD (Archives)
+      { lat: -1.2834, lng: 36.8235 }, // CBD
       { lat: -1.2921, lng: 36.8219 }, // Community
       { lat: -1.3000, lng: 36.7900 }, // Ngong Rd Start
       { lat: -1.3150, lng: 36.7700 }, // Junction
@@ -113,6 +114,29 @@ export const AppProvider = ({ children }) => {
       { lat: -1.3800, lng: 36.9300 }, // JKIA Turnoff
       { lat: -1.4800, lng: 36.9600 }, // Kitengela
     ],
+
+    // === ALIASES (SAFEGUARDS FOR ALTERNATE NAMING) ===
+    "CBD - Westlands": [
+      { lat: -1.2834, lng: 36.8235 },
+      { lat: -1.2680, lng: 36.8110 },
+      { lat: -1.2550, lng: 36.7800 },
+    ],
+    "CBD - Ngong": [
+      { lat: -1.2834, lng: 36.8235 },
+      { lat: -1.3000, lng: 36.7900 },
+      { lat: -1.3600, lng: 36.6500 },
+    ],
+    "CBD - Thika": [
+      { lat: -1.2834, lng: 36.8235 },
+      { lat: -1.1500, lng: 36.9600 },
+      { lat: -1.0333, lng: 37.0693 },
+    ],
+    "CBD - Kitengela": [
+      { lat: -1.2834, lng: 36.8235 },
+      { lat: -1.3800, lng: 36.9300 },
+      { lat: -1.4800, lng: 36.9600 },
+    ],
+
     // Fallback Generic Loop
     "generic": [
       { lat: -1.2921, lng: 36.8219 },
@@ -138,23 +162,28 @@ export const AppProvider = ({ children }) => {
 
         // 2. Fetch Vehicles
         const vehiclesRes = await fetchMatatus();
-        console.log("Vehicles API Response:", vehiclesRes);
         // Backend returns { status: "success", data: [...] }
         const apiVehicles = vehiclesRes.data?.data || vehiclesRes.data || [];
-        console.log("Parsed vehicles:", apiVehicles);
 
         // 3. Map Vehicles with Route info
         const mappedVehicles = apiVehicles.map(v => {
           // Find matching route
           const matchedRoute = currentRoutes.find(r => r.id === v.route_id);
           const routeName = matchedRoute
-            ? matchedRoute.name // e.g., "CBD - Westlands" (from Route.to_dict())
+            ? matchedRoute.name // e.g., "Nairobi CBD - Ngong"
             : (v.route_id ? `Route ${v.route_id}` : "Unassigned");
 
           // Determine Path
-          // Try exact name match, or partial, or generic
-          let path = ROUTE_COORDINATES[routeName]
-            || ROUTE_COORDINATES["generic"];
+          // Try exact name match, or fallback to generic
+          let path = ROUTE_COORDINATES[routeName] || ROUTE_COORDINATES["generic"];
+
+          // Fuzzy match fallback: Check if route name contains key keywords
+          if (!ROUTE_COORDINATES[routeName]) {
+            if (routeName.includes("Westlands")) path = ROUTE_COORDINATES["CBD - Westlands"];
+            else if (routeName.includes("Ngong")) path = ROUTE_COORDINATES["Nairobi CBD - Ngong"];
+            else if (routeName.includes("Thika")) path = ROUTE_COORDINATES["Nairobi CBD - Thika"];
+            else if (routeName.includes("Kitengela")) path = ROUTE_COORDINATES["Nairobi CBD - Kitengela"];
+          }
 
           // If we have origin/dest in route, we could try to fuzzy match, but exact name is safer.
           // Fallback: If no predefined path, generate a simple line based on lat/lng if available (backend doesn't send yet)
