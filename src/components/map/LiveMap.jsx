@@ -38,7 +38,7 @@ const LiveMap = ({ vehicles = [], centerVehicle, showRoutes = false }) => {
           const lat = start.lat + (end.lat - start.lat) * progress;
           const lng = start.lng + (end.lng - start.lng) * progress;
 
-          progress += 0.005; // speed control (slowed down)
+          progress += 0.001; // speed control (very slow)
           if (progress >= 1) {
             progress = 0;
             idx = (idx + 1) % route.length;
